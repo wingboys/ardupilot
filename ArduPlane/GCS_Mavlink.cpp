@@ -5,6 +5,14 @@
 // default sensors are present and healthy: gyro, accelerometer, barometer, rate_control, attitude_stabilization, yaw_position, altitude control, x/y position control, motor_control
 #define MAVLINK_SENSOR_PRESENT_DEFAULT (MAV_SYS_STATUS_SENSOR_3D_GYRO | MAV_SYS_STATUS_SENSOR_3D_ACCEL | MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE | MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL | MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION | MAV_SYS_STATUS_SENSOR_YAW_POSITION | MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL | MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL | MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS | MAV_SYS_STATUS_AHRS)
 
+//! If this define is active, battery messages coming in over MAVLINK will used for the internal estimation of the battery status.
+#define MAVLINK_BATTERY_MESSAGES 1
+
+#if MAVLINK_BATTERY_MESSAGES == 1
+//if we use the mavlink battery monitor, then this is the struct where the battery backend will take its values from
+AP_BattMonitor::BattMonitor_State m_BattMonitorStateMavlink = AP_BattMonitor::BattMonitor_State();
+#endif
+
 void Plane::send_heartbeat(mavlink_channel_t chan)
 {
     uint8_t base_mode = MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
@@ -1102,6 +1110,20 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     case MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
     {
         handle_request_data_stream(msg, true);
+        break;
+    }
+
+    case MAVLINK_MSG_ID_BATTERY_STATUS:
+    {
+        mavlink_battery_status_t packet;
+        mavlink_msg_battery_status_decode(msg, &packet);
+
+        m_BattMonitorStateMavlink.instance          = 0;
+        m_BattMonitorStateMavlink.voltage           = packet.voltages[0] / 1000.0;
+        m_BattMonitorStateMavlink.current_amps      = packet.current_battery / 100.0;
+        m_BattMonitorStateMavlink.current_total_mah = packet.current_consumed;
+        m_BattMonitorStateMavlink.last_time_micros  = hal.scheduler->micros();
+
         break;
     }
 

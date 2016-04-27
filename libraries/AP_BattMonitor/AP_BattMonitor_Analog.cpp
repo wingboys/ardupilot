@@ -22,6 +22,7 @@ AP_BattMonitor_Analog::AP_BattMonitor_Analog(AP_BattMonitor &mon, uint8_t instan
 void
 AP_BattMonitor_Analog::read()
 {
+    #if MAVLINK_BATTERY_MESSAGES == 0
     // this copes with changing the pin at runtime
     _volt_pin_analog_source->set_pin(_mon._volt_pin[_state.instance]);
 
@@ -49,4 +50,13 @@ AP_BattMonitor_Analog::read()
         // record time
         _state.last_time_micros = tnow;
     }
+    #elif MAVLINK_BATTERY_MESSAGES == 1
+    //just copy everything to our state
+        _state.voltage           = m_BattMonitorStateMavlink.voltage;
+        _state.current_amps      = m_BattMonitorStateMavlink.current_amps;
+        _state.current_total_mah = m_BattMonitorStateMavlink.current_total_mah;
+        _state.last_time_micros  = m_BattMonitorStateMavlink.last_time_micros;
+    #else
+    #error
+    #endif
 }
