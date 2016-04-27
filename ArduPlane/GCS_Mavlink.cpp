@@ -263,9 +263,9 @@ void Plane::send_extended_status1(mavlink_channel_t chan)
     int16_t battery_current = -1;
     int8_t battery_remaining = -1;
 
-    if (battery.has_current() && battery.healthy()) {
-        battery_remaining = battery.capacity_remaining_pct();
-        battery_current = battery.current_amps() * 100;
+    if (battery.has_current() && m_BattMonitorStateMavlink.healthy {
+        battery_remaining = m_BattMonitorStateMavlink.capacity_remaining_pct;
+        battery_current = m_BattMonitorStateMavlink.current_amps * 100;
     }
 
 #if AP_TERRAIN_AVAILABLE
@@ -308,7 +308,7 @@ void Plane::send_extended_status1(mavlink_channel_t chan)
         control_sensors_enabled,
         control_sensors_health,
         (uint16_t)(scheduler.load_average(20000) * 1000),
-        battery.voltage() * 1000, // mV
+        m_BattMonitorStateMavlink.voltage * 1000, // mV
         battery_current,        // in 10mA units
         battery_remaining,      // in %
         0, // comm drops %,
