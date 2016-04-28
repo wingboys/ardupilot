@@ -308,6 +308,35 @@ void Plane::send_extended_status1(mavlink_channel_t chan)
         0, 0, 0, 0);
 }
 
+void Plane::send_location_neitzke(mavlink_channel_t chan)
+{
+
+	uint32_t fix_time_ms;
+	// if we have a GPS fix, take the time as the last fix time. That
+	// allows us to correctly calculate velocities and extrapolate
+	// positions.
+	// If we don't have a GPS fix then we are dead reckoning, and will
+	// use the current boot time as the fix time.    
+	if (gps.status() >= AP_GPS::GPS_OK_FIX_2D) {
+		fix_time_ms = gps.last_fix_time_ms();
+	} else {
+		fix_time_ms = millis();
+	}
+	const Vector3f &vel = gps.velocity();
+	mavlink_msg_global_position_neitzke_send(
+			chan,
+			fix_time_ms,
+			current_loc.lat,                // in 1E7 degrees
+			current_loc.lng,                // in 1E7 degrees
+			current_loc.alt * 10UL,         // millimeters above sea level
+			relative_altitude() * 1.0e3f,    // millimeters above ground
+			barometer.get_altitude() * 1.0e2f,     //altitude from baro, in cm  
+			vel.x * 100,  // X speed cm/s (+ve North)
+			vel.y * 100,  // Y speed cm/s (+ve East)
+			vel.z * -100, // Z speed cm/s (+ve up)
+			ahrs.yaw_sensor);
+}
+
 void Plane::send_location(mavlink_channel_t chan)
 {
     uint32_t fix_time_ms;
@@ -327,7 +356,7 @@ void Plane::send_location(mavlink_channel_t chan)
         fix_time_ms,
         current_loc.lat,                // in 1E7 degrees
         current_loc.lng,                // in 1E7 degrees
-        barometer.get_altitude() * 1.0e3f,       //altitude from baro //current_loc.alt * 10UL,         // millimeters above sea level
+        current_loc.alt * 10UL,         // millimeters above sea level
         relative_altitude() * 1.0e3f,    // millimeters above ground
         vel.x * 100,  // X speed cm/s (+ve North)
         vel.y * 100,  // Y speed cm/s (+ve East)
@@ -618,6 +647,11 @@ bool GCS_MAVLINK::try_send_message(enum ap_message id)
         CHECK_PAYLOAD_SIZE(GLOBAL_POSITION_INT);
         plane.send_location(chan);
         break;
+    
+    case MSG_LOCATION_NEITZKE:
+	CHECK_PAYLOAD_SIZE(GLOBAL_POSITION_NEITZKE);
+	plane.send_location_neitzke(chan);
+	break;
 
     case MSG_LOCAL_POSITION:
         CHECK_PAYLOAD_SIZE(LOCAL_POSITION_NED);
@@ -1005,6 +1039,7 @@ GCS_MAVLINK::data_stream_send(void)
         // sent with GPS read
         send_message(MSG_LOCATION);
         send_message(MSG_LOCAL_POSITION);
+        send_message(MSG_LOCATION_NEITZKE);
     }
 
     if (plane.gcs_out_of_time) return;

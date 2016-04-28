@@ -1360,6 +1360,7 @@ void GCS_MAVLINK::send_local_position(const AP_AHRS &ahrs) const
         velocity.z);
 }
 
+
 /*
   send LOCAL_POSITION_NED message
  */
