@@ -322,18 +322,28 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 	} else {
 		fix_time_ms = millis();
 	}
-	const Vector3f &vel = gps.velocity();
-	mavlink_msg_global_position_neitzke_send(
+	//const Vector3f &vel = gps.velocity();
+
+	// NEU frame: returns the current position relative to the home location in cm.
+	const Vector3f& curr_pos = inertial_nav.get_position();
+	// NEU frame: 
+	/*   @return velocity vector:
+	 *      		.x : latitude  velocity in cm/s
+	 * 			.y : longitude velocity in cm/s
+	 * 			.z : vertical  velocity in cm/s
+	 */
+	const Vector3f& curr_vel = inertial_nav.get_velocity();
+	
+	mavlink_msg_local_position_neitzke_send(
 			chan,
 			fix_time_ms,
-			current_loc.lat,                // in 1E7 degrees
-			current_loc.lng,                // in 1E7 degrees
-			current_loc.alt * 10UL,         // millimeters above sea level
-			relative_altitude() * 1.0e3f,    // millimeters above ground
+			(int32_t)curr_pos.x,                // cm
+			(int32_t)curr_pos.y,                // cm
+			(int32_t)curr_pos.z,         // cm
 			barometer.get_altitude() * 1.0e2f,     //altitude from baro, in cm  
-			vel.x * 100,  // X speed cm/s (+ve North)
-			vel.y * 100,  // Y speed cm/s (+ve East)
-			vel.z * -100, // Z speed cm/s (+ve up)
+			(int16_t)curr_vel.x,  // X speed cm/s (+ve North)
+			(int16_t)curr_vel.y,  // Y speed cm/s (+ve East)
+			(int16_t)curr_vel.z, // Z speed cm/s (+ve up)
 			ahrs.yaw_sensor);
 }
 
@@ -649,7 +659,7 @@ bool GCS_MAVLINK::try_send_message(enum ap_message id)
         break;
     
     case MSG_LOCATION_NEITZKE:
-	CHECK_PAYLOAD_SIZE(GLOBAL_POSITION_NEITZKE);
+	CHECK_PAYLOAD_SIZE(LOCAL_POSITION_NEITZKE);
 	plane.send_location_neitzke(chan);
 	break;
 

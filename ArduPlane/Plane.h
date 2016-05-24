@@ -110,6 +110,7 @@
 #include <AP_HAL_Empty/AP_HAL_Empty.h>
 #include <AP_HAL_VRBRAIN/AP_HAL_VRBRAIN.h>
 
+#include <AP_InertialNav/AP_InertialNav.h>
 /*
   a plane specific arming class
  */
@@ -212,6 +213,8 @@ private:
 #else
     AP_AHRS_DCM ahrs {ins, barometer, gps};
 #endif
+    
+    AP_InertialNav_NavEKF inertial_nav{ahrs};
 
     AP_L1_Control L1_controller {ahrs};
     AP_TECS TECS_controller {ahrs, aparm};
