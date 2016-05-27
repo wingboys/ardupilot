@@ -950,6 +950,7 @@
 	    <description>The filtered local position (e.g. fused GPS and accelerometers). The position is in local NEU frame (right-handed, Z-up). It
 		    is designed as scaled integer message since the resolution of float is not sufficient.</description>
 	    <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
+	    <field type="uint8_t" name="position_ok">boolean indicate if we have a good absolute position</field>
 	    <field type="int32_t" name="x">current x position relative to the home location in cm</field>
 	    <field type="int32_t" name="y">current y position relative to the home location in cm</field>
 	    <field type="int32_t" name="z">current z position relative to the home location in cm</field>

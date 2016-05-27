@@ -323,7 +323,13 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 		fix_time_ms = millis();
 	}
 	//const Vector3f &vel = gps.velocity();
+	
+	// with EKF use filter status and ekf check
+	nav_filter_status filt_status = inertial_nav.get_filter_status();
 
+	// once armed we require a good absolute position and EKF must not be in const_pos_mode
+	bool postion_ok = filt_status.flags.horiz_pos_abs && !filt_status.flags.const_pos_mode;
+	
 	// NEU frame: returns the current position relative to the home location in cm.
 	const Vector3f& curr_pos = inertial_nav.get_position();
 	// NEU frame: 
@@ -337,6 +343,7 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 	mavlink_msg_local_position_neitzke_send(
 			chan,
 			fix_time_ms,
+			postion_ok, // bool
 			(int32_t)curr_pos.x,                // cm
 			(int32_t)curr_pos.y,                // cm
 			(int32_t)curr_pos.z,         // cm
