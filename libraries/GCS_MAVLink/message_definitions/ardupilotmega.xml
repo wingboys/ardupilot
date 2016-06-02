@@ -951,13 +951,13 @@
 		    is designed as scaled integer message since the resolution of float is not sufficient.</description>
 	    <field type="uint32_t" name="time_boot_ms">Timestamp (milliseconds since system boot)</field>
 	    <field type="uint8_t" name="position_ok">boolean indicate if we have a good absolute position</field>
-	    <field type="int32_t" name="x">current x position relative to the home location in cm</field>
-	    <field type="int32_t" name="y">current y position relative to the home location in cm</field>
-	    <field type="int32_t" name="z">current z position relative to the home location in cm</field>
+	    <field type="float" name="x">current x position relative to the home location in cm</field>
+	    <field type="float" name="y">current y position relative to the home location in cm</field>
+	    <field type="float" name="z">current z position relative to the home location in cm</field>
 	    <field type="int32_t" name="baro_alt">Baro altitude above ground in meters, expressed in cm</field>
-	    <field type="int16_t" name="vx">Fused velocity in North direction in NEU frame in cm/s</field>
-	    <field type="int16_t" name="vy">Fused velocity in East direction in NEU frame in cm/s</field>
-	    <field type="int16_t" name="vz">Fused velocity in Up direction in NEU frame in cm/s</field>
+	    <field type="float" name="vx">Fused velocity in North direction in NEU frame in cm/s</field>
+	    <field type="float" name="vy">Fused velocity in East direction in NEU frame in cm/s</field>
+	    <field type="float" name="vz">Fused velocity in Up direction in NEU frame in cm/s</field>
 	    <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
     </message>
 

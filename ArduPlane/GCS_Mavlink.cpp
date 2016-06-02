@@ -344,13 +344,13 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 			chan,
 			fix_time_ms,
 			postion_ok, // bool
-			(int32_t)curr_pos.x,                // cm
-			(int32_t)curr_pos.y,                // cm
-			(int32_t)curr_pos.z,         // cm
+			curr_pos.x,                // cm
+			curr_pos.y,                // cm
+			curr_pos.z,         // cm
 			barometer.get_altitude() * 1.0e2f,     //altitude from baro, in cm  
-			(int16_t)curr_vel.x,  // X speed cm/s (+ve North)
-			(int16_t)curr_vel.y,  // Y speed cm/s (+ve East)
-			(int16_t)curr_vel.z, // Z speed cm/s (+ve up)
+			curr_vel.x,  // X speed cm/s (+ve North)
+			curr_vel.y,  // Y speed cm/s (+ve East)
+			curr_vel.z, // Z speed cm/s (+ve up)
 			ahrs.yaw_sensor);
 }
 

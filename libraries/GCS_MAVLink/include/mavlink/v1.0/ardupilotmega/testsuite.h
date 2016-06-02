@@ -2780,7 +2780,7 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_local_position_neitzke_t packet_in = {
-		963497464,963497672,963497880,963498088,963498296,18275,18379,18483,18587,89
+		963497464,45.0,73.0,101.0,963498296,157.0,185.0,213.0,18899,235
     };
 	mavlink_local_position_neitzke_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
