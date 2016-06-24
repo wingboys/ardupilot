@@ -166,6 +166,11 @@ void AP_SerialManager::init()
                     state[i].uart->begin(map_baudrate(state[i].baud),
                                          AP_SERIALMANAGER_SToRM32_BUFSIZE_RX,
                                          AP_SERIALMANAGER_SToRM32_BUFSIZE_TX);
+		case SerialProtocol_UniLog2:
+		    state[i].baud = AP_SERIALMANAGER_UniLog2_BAUD / 1000;
+                    state[i].uart->begin(map_baudrate(state[i].baud),
+                                         AP_SERIALMANAGER_UniLog2_BUFSIZE_RX,
+                                         AP_SERIALMANAGER_UniLog2_BUFSIZE_TX);
                     break;
             }
         }

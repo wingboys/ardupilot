@@ -136,7 +136,7 @@ void Plane::init_ardupilot()
     init_rangefinder();
 
     // initialise battery monitoring
-    battery.init();
+    battery.init(&serial_manager);
 
     // init the GCS
     gcs[0].setup_uart(serial_manager, AP_SerialManager::SerialProtocol_Console, 0);
