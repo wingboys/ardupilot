@@ -209,7 +209,9 @@ bool AP_BattMonitor::has_current(uint8_t instance) const
         if (drivers[instance] != NULL) {
             return (_monitoring[instance] == BattMonitor_TYPE_ANALOG_VOLTAGE_AND_CURRENT ||
                     _monitoring[instance] == BattMonitor_TYPE_SMBUS ||
-                    _monitoring[instance] == BattMonitor_TYPE_BEBOP);
+                    _monitoring[instance] == BattMonitor_TYPE_BEBOP ||
+                    _monitoring[instance] == BattMonitor_TYPE_SERIAL_UNILOG
+		    );
         }
     }
 
