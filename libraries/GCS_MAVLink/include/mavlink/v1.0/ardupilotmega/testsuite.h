@@ -2780,7 +2780,7 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_local_position_neitzke_t packet_in = {
-		963497464,45.0,73.0,101.0,963498296,157.0,185.0,213.0,18899,235
+		963497464,45.0,73.0,101.0,963498296,157.0,185.0,213.0,18899,235,46
     };
 	mavlink_local_position_neitzke_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -2794,6 +2794,7 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         	packet1.vz = packet_in.vz;
         	packet1.hdg = packet_in.hdg;
         	packet1.position_ok = packet_in.position_ok;
+        	packet1.flight_stage = packet_in.flight_stage;
         
         
 
@@ -2803,12 +2804,12 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_local_position_neitzke_pack(system_id, component_id, &msg , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg );
+	mavlink_msg_local_position_neitzke_pack(system_id, component_id, &msg , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg , packet1.flight_stage );
 	mavlink_msg_local_position_neitzke_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_local_position_neitzke_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg );
+	mavlink_msg_local_position_neitzke_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg , packet1.flight_stage );
 	mavlink_msg_local_position_neitzke_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -2821,7 +2822,7 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_local_position_neitzke_send(MAVLINK_COMM_1 , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg );
+	mavlink_msg_local_position_neitzke_send(MAVLINK_COMM_1 , packet1.time_boot_ms , packet1.position_ok , packet1.x , packet1.y , packet1.z , packet1.baro_alt , packet1.vx , packet1.vy , packet1.vz , packet1.hdg , packet1.flight_stage );
 	mavlink_msg_local_position_neitzke_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }

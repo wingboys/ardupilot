@@ -14,19 +14,20 @@ typedef struct __mavlink_local_position_neitzke_t
  float vz; /*< Fused velocity in Up direction in NEU frame in cm/s*/
  uint16_t hdg; /*< Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX*/
  uint8_t position_ok; /*< boolean indicate if we have a good absolute position*/
+ int8_t flight_stage; /*< stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)*/
 } mavlink_local_position_neitzke_t;
 
-#define MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN 35
-#define MAVLINK_MSG_ID_225_LEN 35
+#define MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN 36
+#define MAVLINK_MSG_ID_225_LEN 36
 
-#define MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC 33
-#define MAVLINK_MSG_ID_225_CRC 33
+#define MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC 70
+#define MAVLINK_MSG_ID_225_CRC 70
 
 
 
 #define MAVLINK_MESSAGE_INFO_LOCAL_POSITION_NEITZKE { \
 	"LOCAL_POSITION_NEITZKE", \
-	10, \
+	11, \
 	{  { "time_boot_ms", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_local_position_neitzke_t, time_boot_ms) }, \
          { "x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_local_position_neitzke_t, x) }, \
          { "y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_local_position_neitzke_t, y) }, \
@@ -37,6 +38,7 @@ typedef struct __mavlink_local_position_neitzke_t
          { "vz", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_local_position_neitzke_t, vz) }, \
          { "hdg", NULL, MAVLINK_TYPE_UINT16_T, 0, 32, offsetof(mavlink_local_position_neitzke_t, hdg) }, \
          { "position_ok", NULL, MAVLINK_TYPE_UINT8_T, 0, 34, offsetof(mavlink_local_position_neitzke_t, position_ok) }, \
+         { "flight_stage", NULL, MAVLINK_TYPE_INT8_T, 0, 35, offsetof(mavlink_local_position_neitzke_t, flight_stage) }, \
          } \
 }
 
@@ -57,10 +59,11 @@ typedef struct __mavlink_local_position_neitzke_t
  * @param vy Fused velocity in East direction in NEU frame in cm/s
  * @param vz Fused velocity in Up direction in NEU frame in cm/s
  * @param hdg Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+ * @param flight_stage stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_local_position_neitzke_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-						       uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg)
+						       uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg, int8_t flight_stage)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN];
@@ -74,6 +77,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack(uint8_t system_id
 	_mav_put_float(buf, 28, vz);
 	_mav_put_uint16_t(buf, 32, hdg);
 	_mav_put_uint8_t(buf, 34, position_ok);
+	_mav_put_int8_t(buf, 35, flight_stage);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN);
 #else
@@ -88,6 +92,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack(uint8_t system_id
 	packet.vz = vz;
 	packet.hdg = hdg;
 	packet.position_ok = position_ok;
+	packet.flight_stage = flight_stage;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN);
 #endif
@@ -116,11 +121,12 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack(uint8_t system_id
  * @param vy Fused velocity in East direction in NEU frame in cm/s
  * @param vz Fused velocity in Up direction in NEU frame in cm/s
  * @param hdg Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+ * @param flight_stage stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_local_position_neitzke_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
 							   mavlink_message_t* msg,
-						           uint32_t time_boot_ms,uint8_t position_ok,float x,float y,float z,int32_t baro_alt,float vx,float vy,float vz,uint16_t hdg)
+						           uint32_t time_boot_ms,uint8_t position_ok,float x,float y,float z,int32_t baro_alt,float vx,float vy,float vz,uint16_t hdg,int8_t flight_stage)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN];
@@ -134,6 +140,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack_chan(uint8_t syst
 	_mav_put_float(buf, 28, vz);
 	_mav_put_uint16_t(buf, 32, hdg);
 	_mav_put_uint8_t(buf, 34, position_ok);
+	_mav_put_int8_t(buf, 35, flight_stage);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN);
 #else
@@ -148,6 +155,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack_chan(uint8_t syst
 	packet.vz = vz;
 	packet.hdg = hdg;
 	packet.position_ok = position_ok;
+	packet.flight_stage = flight_stage;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN);
 #endif
@@ -170,7 +178,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_pack_chan(uint8_t syst
  */
 static inline uint16_t mavlink_msg_local_position_neitzke_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_local_position_neitzke_t* local_position_neitzke)
 {
-	return mavlink_msg_local_position_neitzke_pack(system_id, component_id, msg, local_position_neitzke->time_boot_ms, local_position_neitzke->position_ok, local_position_neitzke->x, local_position_neitzke->y, local_position_neitzke->z, local_position_neitzke->baro_alt, local_position_neitzke->vx, local_position_neitzke->vy, local_position_neitzke->vz, local_position_neitzke->hdg);
+	return mavlink_msg_local_position_neitzke_pack(system_id, component_id, msg, local_position_neitzke->time_boot_ms, local_position_neitzke->position_ok, local_position_neitzke->x, local_position_neitzke->y, local_position_neitzke->z, local_position_neitzke->baro_alt, local_position_neitzke->vx, local_position_neitzke->vy, local_position_neitzke->vz, local_position_neitzke->hdg, local_position_neitzke->flight_stage);
 }
 
 /**
@@ -184,7 +192,7 @@ static inline uint16_t mavlink_msg_local_position_neitzke_encode(uint8_t system_
  */
 static inline uint16_t mavlink_msg_local_position_neitzke_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_local_position_neitzke_t* local_position_neitzke)
 {
-	return mavlink_msg_local_position_neitzke_pack_chan(system_id, component_id, chan, msg, local_position_neitzke->time_boot_ms, local_position_neitzke->position_ok, local_position_neitzke->x, local_position_neitzke->y, local_position_neitzke->z, local_position_neitzke->baro_alt, local_position_neitzke->vx, local_position_neitzke->vy, local_position_neitzke->vz, local_position_neitzke->hdg);
+	return mavlink_msg_local_position_neitzke_pack_chan(system_id, component_id, chan, msg, local_position_neitzke->time_boot_ms, local_position_neitzke->position_ok, local_position_neitzke->x, local_position_neitzke->y, local_position_neitzke->z, local_position_neitzke->baro_alt, local_position_neitzke->vx, local_position_neitzke->vy, local_position_neitzke->vz, local_position_neitzke->hdg, local_position_neitzke->flight_stage);
 }
 
 /**
@@ -201,10 +209,11 @@ static inline uint16_t mavlink_msg_local_position_neitzke_encode_chan(uint8_t sy
  * @param vy Fused velocity in East direction in NEU frame in cm/s
  * @param vz Fused velocity in Up direction in NEU frame in cm/s
  * @param hdg Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+ * @param flight_stage stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_local_position_neitzke_send(mavlink_channel_t chan, uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg)
+static inline void mavlink_msg_local_position_neitzke_send(mavlink_channel_t chan, uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg, int8_t flight_stage)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN];
@@ -218,6 +227,7 @@ static inline void mavlink_msg_local_position_neitzke_send(mavlink_channel_t cha
 	_mav_put_float(buf, 28, vz);
 	_mav_put_uint16_t(buf, 32, hdg);
 	_mav_put_uint8_t(buf, 34, position_ok);
+	_mav_put_int8_t(buf, 35, flight_stage);
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE, buf, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC);
@@ -236,6 +246,7 @@ static inline void mavlink_msg_local_position_neitzke_send(mavlink_channel_t cha
 	packet.vz = vz;
 	packet.hdg = hdg;
 	packet.position_ok = position_ok;
+	packet.flight_stage = flight_stage;
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE, (const char *)&packet, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC);
@@ -253,7 +264,7 @@ static inline void mavlink_msg_local_position_neitzke_send(mavlink_channel_t cha
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_local_position_neitzke_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg)
+static inline void mavlink_msg_local_position_neitzke_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint32_t time_boot_ms, uint8_t position_ok, float x, float y, float z, int32_t baro_alt, float vx, float vy, float vz, uint16_t hdg, int8_t flight_stage)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char *buf = (char *)msgbuf;
@@ -267,6 +278,7 @@ static inline void mavlink_msg_local_position_neitzke_send_buf(mavlink_message_t
 	_mav_put_float(buf, 28, vz);
 	_mav_put_uint16_t(buf, 32, hdg);
 	_mav_put_uint8_t(buf, 34, position_ok);
+	_mav_put_int8_t(buf, 35, flight_stage);
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE, buf, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC);
@@ -285,6 +297,7 @@ static inline void mavlink_msg_local_position_neitzke_send_buf(mavlink_message_t
 	packet->vz = vz;
 	packet->hdg = hdg;
 	packet->position_ok = position_ok;
+	packet->flight_stage = flight_stage;
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE, (const char *)packet, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN, MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_CRC);
@@ -401,6 +414,16 @@ static inline uint16_t mavlink_msg_local_position_neitzke_get_hdg(const mavlink_
 }
 
 /**
+ * @brief Get field flight_stage from local_position_neitzke message
+ *
+ * @return stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)
+ */
+static inline int8_t mavlink_msg_local_position_neitzke_get_flight_stage(const mavlink_message_t* msg)
+{
+	return _MAV_RETURN_int8_t(msg,  35);
+}
+
+/**
  * @brief Decode a local_position_neitzke message into a struct
  *
  * @param msg The message to decode
@@ -419,6 +442,7 @@ static inline void mavlink_msg_local_position_neitzke_decode(const mavlink_messa
 	local_position_neitzke->vz = mavlink_msg_local_position_neitzke_get_vz(msg);
 	local_position_neitzke->hdg = mavlink_msg_local_position_neitzke_get_hdg(msg);
 	local_position_neitzke->position_ok = mavlink_msg_local_position_neitzke_get_position_ok(msg);
+	local_position_neitzke->flight_stage = mavlink_msg_local_position_neitzke_get_flight_stage(msg);
 #else
 	memcpy(local_position_neitzke, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN);
 #endif
