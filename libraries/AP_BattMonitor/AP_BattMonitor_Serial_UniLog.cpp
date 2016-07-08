@@ -33,6 +33,7 @@ void AP_BattMonitor_Serial_UniLog::read()
 		return;
 	}
 	
+	//hal.uartA->printf("state: %d\n", unisens_state);
 	switch(unisens_state)
 	{
 		case UNISENS_INITIALIZE_CONNECTION:
@@ -61,6 +62,15 @@ void AP_BattMonitor_Serial_UniLog::read()
 				{
 					uniSensExtractValues();
 				}
+				/*
+				else
+				{
+					for (int i = 0; i < m_uiUniSensSeqNo; i++)
+						hal.uartA->printf("%c", (char)m_auiUniSensSequence[i]);
+					hal.uartA->println();
+
+				}*/
+				_port->flush();
 				// no matter chechsum correct or not, do re-request
 				requestLiveBatteryStatus();
 				unisens_state = UNISENS_WAITING_FOR_ANSWER;
@@ -127,8 +137,9 @@ int8_t AP_BattMonitor_Serial_UniLog::recvLiveBatteryStatus()
 			if (m_uiUniSensSeqNo < UNISENS_MAX_MESSAGE_LEN)
 			{
 				m_auiUniSensSequence[m_uiUniSensSeqNo++] = c;
-			}else
+			}else{
 				return -1; //exceeding buffer
+			}
 		}
 		if ((hal.scheduler->micros() - tnow) > 400) //prevent it to run for too long
 			return 0;
@@ -161,6 +172,7 @@ int8_t AP_BattMonitor_Serial_UniLog::checkDataOk()
 	int16_t checksum =	uniSensDehex(m_auiUniSensChecksum[0]) * 16 +
 					uniSensDehex(m_auiUniSensChecksum[1]);
 
+	//hal.uartA->printf("checksum, iXor: %d %d\n", checksum, iXor);
 	return checksum == iXor;
 }
 

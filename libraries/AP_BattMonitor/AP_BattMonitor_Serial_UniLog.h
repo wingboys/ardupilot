@@ -7,7 +7,7 @@
 #include "AP_BattMonitor_Backend.h"
 #include <AP_SerialManager/AP_SerialManager.h>
 
-#define UNISENS_MAX_MESSAGE_LEN 120
+#define UNISENS_MAX_MESSAGE_LEN 140
 #define UNISENS_CHECKSUM_LEN 2
 #define AP_BATTMONITOR_SERIAL_UNILOG_TIMEOUT_MICROS 4000000    // sensor becomes unhealthy if no successful readings for 2 seconds
 
