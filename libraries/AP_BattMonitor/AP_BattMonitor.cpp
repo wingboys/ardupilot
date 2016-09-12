@@ -3,6 +3,7 @@
 #include "AP_BattMonitor_Analog.h"
 #include "AP_BattMonitor_SMBus.h"
 #include "AP_BattMonitor_Bebop.h"
+#include "AP_BattMonitor_Serial_UniLog.h"
 
 extern const AP_HAL::HAL& hal;
 
@@ -122,16 +123,18 @@ AP_BattMonitor::AP_BattMonitor(void) :
     _num_instances(0)
 {
     AP_Param::setup_object_defaults(this, var_info);
+    _serial_manager = NULL;
 }
 
 // init - instantiate the battery monitors
 void
-AP_BattMonitor::init()
+AP_BattMonitor::init(const AP_SerialManager* serial_manager)
 {
     // check init has not been called before
     if (_num_instances != 0) {
         return;
     }
+    _serial_manager = serial_manager;
 
 #if CONFIG_HAL_BOARD_SUBTYPE == HAL_BOARD_SUBTYPE_LINUX_BEBOP
     // force monitor for bebop
@@ -164,6 +167,10 @@ AP_BattMonitor::init()
                 _num_instances++;
 #endif
                 break;
+	    case BattMonitor_TYPE_SERIAL_UNILOG:
+                state[instance].instance = instance;
+                drivers[instance] = new AP_BattMonitor_Serial_UniLog(*this, instance, state[instance], _serial_manager);
+                _num_instances++;
         }
 
         // call init function for each backend
@@ -202,7 +209,9 @@ bool AP_BattMonitor::has_current(uint8_t instance) const
         if (drivers[instance] != NULL) {
             return (_monitoring[instance] == BattMonitor_TYPE_ANALOG_VOLTAGE_AND_CURRENT ||
                     _monitoring[instance] == BattMonitor_TYPE_SMBUS ||
-                    _monitoring[instance] == BattMonitor_TYPE_BEBOP);
+                    _monitoring[instance] == BattMonitor_TYPE_BEBOP ||
+                    _monitoring[instance] == BattMonitor_TYPE_SERIAL_UNILOG
+		    );
         }
     }
 
@@ -214,6 +223,7 @@ bool AP_BattMonitor::has_current(uint8_t instance) const
 float AP_BattMonitor::voltage(uint8_t instance) const
 {
     if (instance < AP_BATT_MONITOR_MAX_INSTANCES) {
+
         return _BattMonitor_STATE(instance).voltage;
     } else {
         return 0.0f;
@@ -251,6 +261,7 @@ float AP_BattMonitor::current_amps(uint8_t instance) const {
 /// current_total_mah - returns total current drawn since start-up in amp-hours
 float AP_BattMonitor::current_total_mah(uint8_t instance) const {
     if (instance < AP_BATT_MONITOR_MAX_INSTANCES) {
+
         return _BattMonitor_STATE(instance).current_total_mah;
     } else {
         return 0.0f;

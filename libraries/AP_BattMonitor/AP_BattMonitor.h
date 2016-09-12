@@ -5,6 +5,7 @@
 #include <AP_Common/AP_Common.h>
 #include <AP_Param/AP_Param.h>
 #include <AP_Math/AP_Math.h>
+#include <AP_SerialManager/AP_SerialManager.h>
 
 // maximum number of battery monitors
 #define AP_BATT_MONITOR_MAX_INSTANCES       2
@@ -41,7 +42,8 @@ public:
         BattMonitor_TYPE_ANALOG_VOLTAGE_ONLY        = 3,
         BattMonitor_TYPE_ANALOG_VOLTAGE_AND_CURRENT = 4,
         BattMonitor_TYPE_SMBUS                      = 5,
-        BattMonitor_TYPE_BEBOP                      = 6
+        BattMonitor_TYPE_BEBOP                      = 6,
+        BattMonitor_TYPE_SERIAL_UNILOG                      = 7
     };
 
     // The BattMonitor_State structure is filled in by the backend driver
@@ -59,7 +61,7 @@ public:
     uint8_t num_instances(void) const { return _num_instances; }
 
     // detect and initialise any available battery monitors
-    void init();
+    void init(const AP_SerialManager* serial_manager);
 
     /// Read the battery voltage and current for all batteries.  Should be called at 10hz
     void read();
@@ -121,5 +123,6 @@ private:
     BattMonitor_State state[AP_BATT_MONITOR_MAX_INSTANCES];
     AP_BattMonitor_Backend *drivers[AP_BATT_MONITOR_MAX_INSTANCES];
     uint8_t     _num_instances;                                     /// number of monitors
+    const AP_SerialManager* _serial_manager;
 };
 #endif  // AP_BATTMONITOR_H

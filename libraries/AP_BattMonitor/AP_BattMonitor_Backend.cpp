@@ -34,6 +34,7 @@ AP_BattMonitor_Backend::AP_BattMonitor_Backend(AP_BattMonitor &mon, uint8_t inst
 uint8_t AP_BattMonitor_Backend::capacity_remaining_pct() const
 {
     float mah_remaining = _mon._pack_capacity[_state.instance] - _state.current_total_mah;
+
     if ( _mon._pack_capacity[_state.instance] > 10 ) { // a very very small battery
         return (100 * (mah_remaining) / _mon._pack_capacity[_state.instance]);
     } else {
