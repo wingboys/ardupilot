@@ -650,7 +650,35 @@ void Plane::update_flight_mode(void)
         update_load_factor();
         update_fbwb_speed_height();
         break;
-        
+
+    case FLY_BY_WIRE_C: {
+        nav_roll_cd = channel_roll->norm_input() * roll_limit_cd;
+        nav_roll_cd = constrain_int32(nav_roll_cd, -roll_limit_cd, roll_limit_cd);
+        update_load_factor();
+
+	set_target_altitude_current(); // no altitude control
+        update_fbwc_speed(); // output demanded throttle based on airspeed
+
+	//directly output pilot's pitch
+	float pitch_input = channel_pitch->norm_input();
+        if (pitch_input > 0) {
+            nav_pitch_cd = pitch_input * aparm.pitch_limit_max_cd;
+        } else {
+            nav_pitch_cd = -(pitch_input * pitch_limit_min_cd);
+        }
+        //adjust_nav_pitch_throttle();
+        nav_pitch_cd = constrain_int32(nav_pitch_cd, pitch_limit_min_cd, aparm.pitch_limit_max_cd.get());
+        if (fly_inverted()) {
+            nav_pitch_cd = -nav_pitch_cd;
+        }
+        if (failsafe.ch3_failsafe && g.short_fs_action == 2) {
+            // FBWC failsafe glide
+            nav_roll_cd = 0;
+            nav_pitch_cd = 0;
+            channel_throttle->servo_out = 0;
+        }
+        break;
+    }
     case CRUISE:
         /*
           in CRUISE mode we use the navigation code to control
@@ -762,6 +790,7 @@ void Plane::update_navigation()
     case FLY_BY_WIRE_A:
     case AUTOTUNE:
     case FLY_BY_WIRE_B:
+    case FLY_BY_WIRE_C:
     case CIRCLE:
         // nothing to do
         break;
@@ -872,6 +901,12 @@ void Plane::update_flight_stage(void)
                                                  throttle_nudge,
                                                  tecs_hgt_afe(),
                                                  aerodynamic_load_factor);
+	/*
+	gcs_send_text_fmt(PSTR("throttle %ld, nav_pit %2.3f, out_pit %2.3f"),
+                                        SpdHgt_Controller->get_throttle_demand(),
+					nav_pitch_cd/100.0f,
+					channel_pitch->servo_out/100.0f);
+					*/
         if (should_log(MASK_LOG_TECS)) {
             Log_Write_TECS_Tuning();
         }

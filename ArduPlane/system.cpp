@@ -407,6 +407,11 @@ void Plane::set_mode(enum FlightMode mode)
         auto_throttle_mode = true;
         set_target_altitude_current();
         break;
+ 
+    case FLY_BY_WIRE_C:
+        auto_throttle_mode = true;
+        set_target_altitude_current();
+        break;
 
     case CIRCLE:
         // the altitude to circle at is taken from the current altitude
@@ -471,6 +476,7 @@ bool Plane::mavlink_set_mode(uint8_t mode)
     case FLY_BY_WIRE_A:
     case AUTOTUNE:
     case FLY_BY_WIRE_B:
+    case FLY_BY_WIRE_C:
     case CRUISE:
     case GUIDED:
     case AUTO:
@@ -658,6 +664,9 @@ void Plane::print_flight_mode(AP_HAL::BetterStream *port, uint8_t mode)
         break;
     case FLY_BY_WIRE_B:
         port->print_P(PSTR("FBW_B"));
+        break;
+    case FLY_BY_WIRE_C:
+        port->print_P(PSTR("FBW_C"));
         break;
     case CRUISE:
         port->print_P(PSTR("CRUISE"));
