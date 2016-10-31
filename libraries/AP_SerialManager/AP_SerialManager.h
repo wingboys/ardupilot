@@ -66,6 +66,9 @@
 #define AP_SERIALMANAGER_SToRM32_BUFSIZE_RX     128
 #define AP_SERIALMANAGER_SToRM32_BUFSIZE_TX     128
 
+#define AP_SERIALMANAGER_UniLog2_BAUD           115200
+#define AP_SERIALMANAGER_UniLog2_BUFSIZE_RX     128
+#define AP_SERIALMANAGER_UniLog2_BUFSIZE_TX     128
 
 class AP_SerialManager {
 
@@ -82,6 +85,7 @@ public:
         SerialProtocol_AlexMos = 7,
         SerialProtocol_SToRM32 = 8,
         SerialProtocol_Lidar = 9,
+        SerialProtocol_UniLog2 = 10,
     };
 
     // Constructor
