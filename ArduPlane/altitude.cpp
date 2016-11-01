@@ -40,6 +40,7 @@ void Plane::adjust_altitude_target()
         // once we reach a loiter target then lock to the final
         // altitude target
         set_target_altitude_location(next_WP_loc);
+	//if you are in Loiter Unlim, you can change the loiter altitude by pitch stick
     } else if (target_altitude.offset_cm != 0 && 
                !location_passed_point(current_loc, prev_WP_loc, next_WP_loc)) {
         // control climb/descent rate

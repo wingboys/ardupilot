@@ -206,24 +206,40 @@ void Plane::update_fbwb_speed_height(void)
  */
 void Plane::update_loiter_unlim_height(void)
 {
+    if (!nav_controller->reached_loiter_target())
+	    return;
+
     static float last_elevator_input;
     float elevator_input;
     elevator_input = channel_pitch->control_in / 4500.0f;
-    
+
     if (g.flybywire_elev_reverse) {
         elevator_input = -elevator_input;
     }
     
-    change_target_altitude(g.flybywire_climb_rate * elevator_input * delta_us_fast_loop * 0.0001f);
-    
+    next_WP_loc.alt += g.flybywire_climb_rate * elevator_input * delta_us_fast_loop * 0.0001f;
+
     if (is_zero(elevator_input) && !is_zero(last_elevator_input)) {
         // the user has just released the elevator, lock in
         // the current altitude
-        set_target_altitude_current();
+	if (next_WP_loc.flags.relative_alt)
+		next_WP_loc.alt = current_loc.alt - home.alt;
+	else
+		next_WP_loc.alt = current_loc.alt;
+	reset_offset_altitude();
     }
 
     // check for FBWB altitude limit
-    check_minimum_altitude();
+    if (next_WP_loc.flags.relative_alt) {
+	    if (next_WP_loc.alt < g.FBWB_min_altitude_cm) {
+		    next_WP_loc.alt = g.FBWB_min_altitude_cm;
+	    }
+    }else{
+    	    if (next_WP_loc.alt < home.alt + g.FBWB_min_altitude_cm) {
+		    next_WP_loc.alt = home.alt + g.FBWB_min_altitude_cm;
+	    }
+    }
+    //check_minimum_altitude();
 
     altitude_error_cm = calc_altitude_error_cm();
     

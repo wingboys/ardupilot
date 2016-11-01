@@ -31,6 +31,7 @@
     .max_time_micros = _max_time_micros,\
 }
 
+
 /*
   scheduler table - all regular tasks are listed here, along with how
   often they should be called (in 20ms units) and the maximum time
@@ -560,6 +561,7 @@ void Plane::update_flight_mode(void)
     case RTL:
     case LOITER:
     case GUIDED:
+	update_loiter_unlim_height();
         calc_nav_roll();
         calc_nav_pitch();
         calc_throttle();

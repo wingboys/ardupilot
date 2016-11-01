@@ -1007,4 +1007,5 @@ public:
 extern const AP_HAL::HAL& hal;
 extern Plane plane;
 
+
 #endif // _PLANE_H_
