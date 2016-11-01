@@ -524,6 +524,11 @@ void Plane::handle_auto_mode(void)
         if (nav_cmd_id != MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT) {
             steer_state.hold_course_cd = -1;
         }
+
+	//if you are in Loiter Unlim, you can change the loiter altitude by pitch stick
+	if (nav_cmd_id == MAV_CMD_NAV_LOITER_UNLIM)
+	    update_loiter_unlim_height();
+
         auto_state.land_complete = false;
         calc_nav_roll();
         calc_nav_pitch();

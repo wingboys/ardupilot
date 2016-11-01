@@ -201,6 +201,36 @@ void Plane::update_fbwb_speed_height(void)
 }
 
 /*
+  handle  height control in Loiter unlim. 
+  In this mode the elevator is used to change target altitude.
+ */
+void Plane::update_loiter_unlim_height(void)
+{
+    static float last_elevator_input;
+    float elevator_input;
+    elevator_input = channel_pitch->control_in / 4500.0f;
+    
+    if (g.flybywire_elev_reverse) {
+        elevator_input = -elevator_input;
+    }
+    
+    change_target_altitude(g.flybywire_climb_rate * elevator_input * delta_us_fast_loop * 0.0001f);
+    
+    if (is_zero(elevator_input) && !is_zero(last_elevator_input)) {
+        // the user has just released the elevator, lock in
+        // the current altitude
+        set_target_altitude_current();
+    }
+
+    // check for FBWB altitude limit
+    check_minimum_altitude();
+
+    altitude_error_cm = calc_altitude_error_cm();
+    
+    last_elevator_input = elevator_input;
+}
+
+/*
   calculate the turn angle for the next leg of the mission
  */
 void Plane::setup_turn_angle(void)
