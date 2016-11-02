@@ -139,6 +139,7 @@ void Plane::stabilize_stick_mixing_direct()
         control_mode == FLY_BY_WIRE_A ||
         control_mode == AUTOTUNE ||
         control_mode == FLY_BY_WIRE_B ||
+        control_mode == FLY_BY_WIRE_C ||
         control_mode == CRUISE ||
         control_mode == TRAINING) {
         return;
@@ -158,6 +159,7 @@ void Plane::stabilize_stick_mixing_fbw()
         control_mode == FLY_BY_WIRE_A ||
         control_mode == AUTOTUNE ||
         control_mode == FLY_BY_WIRE_B ||
+        control_mode == FLY_BY_WIRE_C ||
         control_mode == CRUISE ||
         control_mode == TRAINING ||
         (control_mode == AUTO && g.auto_fbw_steer)) {
