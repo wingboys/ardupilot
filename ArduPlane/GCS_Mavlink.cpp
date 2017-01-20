@@ -621,6 +621,57 @@ bool Plane::telemetry_delayed(mavlink_channel_t chan)
     return true;
 }
 
+bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
+{
+	switch(id)
+	{
+		case	MSG_LOCATION:
+		case	MSG_EXTENDED_STATUS1:
+		case	MSG_EXTENDED_STATUS2:
+		case	MSG_NAV_CONTROLLER_OUTPUT:
+		case	MSG_CURRENT_WAYPOINT:
+		case	MSG_RAW_IMU1:
+		case	MSG_RAW_IMU2:
+		case	MSG_RAW_IMU3:
+		case	MSG_SERVO_OUT:
+		case	MSG_NEXT_WAYPOINT:
+		case	MSG_NEXT_PARAM:
+		case	MSG_STATUSTEXT:
+		case	MSG_LIMITS_STATUS:
+		case	MSG_FENCE_STATUS:
+		case	MSG_AHRS:
+		case	MSG_SIMSTATE:
+		case	MSG_HWSTATUS:
+		case	MSG_RANGEFINDER:
+		case	MSG_TERRAIN:
+		case	MSG_BATTERY2:
+		case	MSG_CAMERA_FEEDBACK:
+		case	MSG_MOUNT_STATUS:
+		case	MSG_OPTICAL_FLOW:
+		case	MSG_GIMBAL_REPORT:
+		case	MSG_MAG_CAL_PROGRESS:
+		case	MSG_MAG_CAL_REPORT:
+		case	MSG_EKF_STATUS_REPORT:
+		case	MSG_LOCAL_POSITION:
+		case	MSG_PID_TUNING:
+		case	MSG_VIBRATION:
+		case	MSG_RPM:
+			return false;
+		case	MSG_ATTITUDE:
+		case	MSG_VFR_HUD:
+		case	MSG_GPS_RAW:
+		case	MSG_WIND:
+		case	MSG_SYSTEM_TIME:
+		case	MSG_RADIO_OUT:
+		case	MSG_RADIO_IN:
+		case 	MSG_HEARTBEAT:
+		case	MSG_MISSION_ITEM_REACHED:
+		case 	MSG_LOCATION_NEITZKE:
+			return true;
+	}
+
+
+}
 
 // try to send a message, return false if it won't fit in the serial tx buffer
 bool GCS_MAVLINK::try_send_message(enum ap_message id)
@@ -636,6 +687,9 @@ bool GCS_MAVLINK::try_send_message(enum ap_message id)
         plane.gcs_out_of_time = true;
         return false;
     }
+
+    if (NeitzkePilot_detected && !is_message_nesesary_for_np(id))
+	    return true;
 
     switch (id) {
     case MSG_HEARTBEAT:
@@ -667,6 +721,8 @@ bool GCS_MAVLINK::try_send_message(enum ap_message id)
         break;
     
     case MSG_LOCATION_NEITZKE:
+	if (!NeitzkePilot_detected)
+		break;
 	CHECK_PAYLOAD_SIZE(LOCAL_POSITION_NEITZKE);
 	plane.send_location_neitzke(chan);
 	break;
@@ -1732,6 +1788,9 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     {
         // We keep track of the last time we received a heartbeat from
         // our GCS for failsafe purposes
+	
+	if (msg->sysid == 12) //hardcoded sysid, should be same as the one in NeitzkePilot
+		NeitzkePilot_detected = true;
         if (msg->sysid != plane.g.sysid_my_gcs) break;
         plane.failsafe.last_heartbeat_ms = plane.millis();
         break;

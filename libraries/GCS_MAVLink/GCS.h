@@ -283,6 +283,9 @@ private:
     // mavlink routing object
     static MAVLink_routing routing;
 
+    //flag indicate whether this port is connected to NeitzkePilot
+    bool NeitzkePilot_detected;
+
     // a vehicle can optionally snoop on messages for other systems
     static void (*msg_snoop)(const mavlink_message_t* msg);
 
@@ -325,6 +328,8 @@ private:
 
     // return true if this channel has hardware flow control
     bool have_flow_control(void);
+
+    bool is_message_nesesary_for_np(enum ap_message id);
 };
 
 #endif // __GCS_H

@@ -31,6 +31,7 @@ GCS_MAVLINK::GCS_MAVLINK() :
     waypoint_receive_timeout(5000)
 {
     AP_Param::setup_object_defaults(this, var_info);
+    NeitzkePilot_detected = false;
 }
 
 void
@@ -1002,6 +1003,9 @@ void GCS_MAVLINK::send_radio_in(uint8_t receiver_rssi)
         values[6],
         values[7],
         receiver_rssi);
+
+    //do not send the 18 chan rc to Neitzke
+    if (NeitzkePilot_detected) return;
 
     if (hal.rcin->num_channels() > 8 && 
         comm_get_txspace(chan) >= MAVLINK_MSG_ID_RC_CHANNELS_LEN + MAVLINK_NUM_NON_PAYLOAD_BYTES) {
