@@ -284,7 +284,10 @@ private:
     static MAVLink_routing routing;
 
     //flag indicate whether this port is connected to NeitzkePilot
-    bool NeitzkePilot_detected;
+    bool neitzkePilot_detected;
+
+    // indicate which system status is neitzke
+    MAV_STATE neitzke_system_status;
 
     // a vehicle can optionally snoop on messages for other systems
     static void (*msg_snoop)(const mavlink_message_t* msg);
