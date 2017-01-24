@@ -629,12 +629,10 @@ bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
 		case	MSG_EXTENDED_STATUS1:
 		case	MSG_EXTENDED_STATUS2:
 		case	MSG_NAV_CONTROLLER_OUTPUT:
-		case	MSG_CURRENT_WAYPOINT:
 		case	MSG_RAW_IMU1:
 		case	MSG_RAW_IMU2:
 		case	MSG_RAW_IMU3:
 		case	MSG_SERVO_OUT:
-		case	MSG_NEXT_WAYPOINT:
 		case	MSG_STATUSTEXT:
 		case	MSG_LIMITS_STATUS:
 		case	MSG_FENCE_STATUS:
@@ -663,6 +661,8 @@ bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
 			else
 				return false;
 
+		case	MSG_CURRENT_WAYPOINT:
+		case	MSG_NEXT_WAYPOINT:
 		case	MSG_NEXT_PARAM:
 		case	MSG_VFR_HUD:
 		case	MSG_GPS_RAW:
