@@ -81,7 +81,7 @@ void Plane::calc_airspeed_errors()
     target_airspeed_cm = g.airspeed_cruise_cm;
 
     // FBW_B airspeed target
-    if (control_mode == FLY_BY_WIRE_B || 
+    if (control_mode == FLY_BY_WIRE_B || control_mode == FLY_BY_WIRE_C ||
         control_mode == CRUISE) {
         target_airspeed_cm = ((int32_t)(aparm.airspeed_max -
                                         aparm.airspeed_min) *
@@ -200,6 +200,7 @@ void Plane::update_fbwb_speed_height(void)
     calc_nav_pitch();
 }
 
+
 /*
   handle  height control in Loiter unlim. 
   In this mode the elevator is used to change target altitude.
@@ -246,6 +247,40 @@ void Plane::update_loiter_unlim_height(void)
     last_elevator_input = elevator_input;
 }
 
+/*
+  handle only speed control in FBWC mode. 
+  In this mode the
+  throttle is used to change target airspeed or throttle
+ */
+void Plane::update_fbwc_speed(void)
+{
+    static float last_elevator_input;
+    float elevator_input;
+    elevator_input = channel_pitch->control_in / 4500.0f;
+    
+    if (g.flybywire_elev_reverse) {
+        elevator_input = -elevator_input;
+    }
+    
+    /*
+    change_target_altitude(g.flybywire_climb_rate * elevator_input * delta_us_fast_loop * 0.0001f);
+    
+    if (is_zero(elevator_input) && !is_zero(last_elevator_input)) {
+        // the user has just released the elevator, lock in
+        // the current altitude
+        set_target_altitude_current();
+    }
+    // check for FBWB altitude limit
+    check_minimum_altitude();
+
+    altitude_error_cm = calc_altitude_error_cm();
+	*/
+    
+    last_elevator_input = elevator_input;
+    
+    calc_throttle();
+    //calc_nav_pitch();
+}
 /*
   calculate the turn angle for the next leg of the mission
  */
