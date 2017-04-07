@@ -1,23 +1,38 @@
+#pragma once
 // MESSAGE GIMBAL_REPORT_FACTORY_TESTS_PROGRESS PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS 210
 
-typedef struct __mavlink_gimbal_report_factory_tests_progress_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_report_factory_tests_progress_t {
  uint8_t test; /*< Which factory test is currently running*/
  uint8_t test_section; /*< Which section of the test is currently running.  The meaning of this is test-dependent*/
  uint8_t test_section_progress; /*< The progress of the current test section, 0x64=100%*/
  uint8_t test_status; /*< The status of the currently executing test section.  The meaning of this is test and section-dependent*/
-} mavlink_gimbal_report_factory_tests_progress_t;
+}) mavlink_gimbal_report_factory_tests_progress_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN 4
+#define MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN 4
 #define MAVLINK_MSG_ID_210_LEN 4
+#define MAVLINK_MSG_ID_210_MIN_LEN 4
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC 238
 #define MAVLINK_MSG_ID_210_CRC 238
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS { \
+	210, \
+	"GIMBAL_REPORT_FACTORY_TESTS_PROGRESS", \
+	4, \
+	{  { "test", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_report_factory_tests_progress_t, test) }, \
+         { "test_section", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_report_factory_tests_progress_t, test_section) }, \
+         { "test_section_progress", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_gimbal_report_factory_tests_progress_t, test_section_progress) }, \
+         { "test_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 3, offsetof(mavlink_gimbal_report_factory_tests_progress_t, test_status) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS { \
 	"GIMBAL_REPORT_FACTORY_TESTS_PROGRESS", \
 	4, \
@@ -27,7 +42,7 @@ typedef struct __mavlink_gimbal_report_factory_tests_progress_t
          { "test_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 3, offsetof(mavlink_gimbal_report_factory_tests_progress_t, test_status) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_report_factory_tests_progress message
@@ -63,11 +78,7 @@ static inline uint16_t mavlink_msg_gimbal_report_factory_tests_progress_pack(uin
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 }
 
 /**
@@ -105,11 +116,7 @@ static inline uint16_t mavlink_msg_gimbal_report_factory_tests_progress_pack_cha
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 }
 
 /**
@@ -159,11 +166,7 @@ static inline void mavlink_msg_gimbal_report_factory_tests_progress_send(mavlink
 	_mav_put_uint8_t(buf, 2, test_section_progress);
 	_mav_put_uint8_t(buf, 3, test_status);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 #else
 	mavlink_gimbal_report_factory_tests_progress_t packet;
 	packet.test = test;
@@ -171,11 +174,21 @@ static inline void mavlink_msg_gimbal_report_factory_tests_progress_send(mavlink
 	packet.test_section_progress = test_section_progress;
 	packet.test_status = test_status;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_report_factory_tests_progress message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_report_factory_tests_progress_send_struct(mavlink_channel_t chan, const mavlink_gimbal_report_factory_tests_progress_t* gimbal_report_factory_tests_progress)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_report_factory_tests_progress_send(chan, gimbal_report_factory_tests_progress->test, gimbal_report_factory_tests_progress->test_section, gimbal_report_factory_tests_progress->test_section_progress, gimbal_report_factory_tests_progress->test_status);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)gimbal_report_factory_tests_progress, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 #endif
 }
 
@@ -196,11 +209,7 @@ static inline void mavlink_msg_gimbal_report_factory_tests_progress_send_buf(mav
 	_mav_put_uint8_t(buf, 2, test_section_progress);
 	_mav_put_uint8_t(buf, 3, test_status);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 #else
 	mavlink_gimbal_report_factory_tests_progress_t *packet = (mavlink_gimbal_report_factory_tests_progress_t *)msgbuf;
 	packet->test = test;
@@ -208,11 +217,7 @@ static inline void mavlink_msg_gimbal_report_factory_tests_progress_send_buf(mav
 	packet->test_section_progress = test_section_progress;
 	packet->test_status = test_status;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_CRC);
 #endif
 }
 #endif
@@ -270,12 +275,14 @@ static inline uint8_t mavlink_msg_gimbal_report_factory_tests_progress_get_test_
  */
 static inline void mavlink_msg_gimbal_report_factory_tests_progress_decode(const mavlink_message_t* msg, mavlink_gimbal_report_factory_tests_progress_t* gimbal_report_factory_tests_progress)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_report_factory_tests_progress->test = mavlink_msg_gimbal_report_factory_tests_progress_get_test(msg);
 	gimbal_report_factory_tests_progress->test_section = mavlink_msg_gimbal_report_factory_tests_progress_get_test_section(msg);
 	gimbal_report_factory_tests_progress->test_section_progress = mavlink_msg_gimbal_report_factory_tests_progress_get_test_section_progress(msg);
 	gimbal_report_factory_tests_progress->test_status = mavlink_msg_gimbal_report_factory_tests_progress_get_test_status(msg);
 #else
-	memcpy(gimbal_report_factory_tests_progress, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN;
+        memset(gimbal_report_factory_tests_progress, 0, MAVLINK_MSG_ID_GIMBAL_REPORT_FACTORY_TESTS_PROGRESS_LEN);
+	memcpy(gimbal_report_factory_tests_progress, _MAV_PAYLOAD(msg), len);
 #endif
 }

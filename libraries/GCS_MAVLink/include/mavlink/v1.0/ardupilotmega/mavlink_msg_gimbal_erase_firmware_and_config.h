@@ -1,22 +1,36 @@
+#pragma once
 // MESSAGE GIMBAL_ERASE_FIRMWARE_AND_CONFIG PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG 208
 
-typedef struct __mavlink_gimbal_erase_firmware_and_config_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_erase_firmware_and_config_t {
  uint32_t knock; /*< Knock value to confirm this is a valid request*/
  uint8_t target_system; /*< System ID*/
  uint8_t target_component; /*< Component ID*/
-} mavlink_gimbal_erase_firmware_and_config_t;
+}) mavlink_gimbal_erase_firmware_and_config_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN 6
+#define MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN 6
 #define MAVLINK_MSG_ID_208_LEN 6
+#define MAVLINK_MSG_ID_208_MIN_LEN 6
 
 #define MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC 221
 #define MAVLINK_MSG_ID_208_CRC 221
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_ERASE_FIRMWARE_AND_CONFIG { \
+	208, \
+	"GIMBAL_ERASE_FIRMWARE_AND_CONFIG", \
+	3, \
+	{  { "knock", NULL, MAVLINK_TYPE_UINT32_T, 0, 0, offsetof(mavlink_gimbal_erase_firmware_and_config_t, knock) }, \
+         { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 4, offsetof(mavlink_gimbal_erase_firmware_and_config_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_gimbal_erase_firmware_and_config_t, target_component) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_ERASE_FIRMWARE_AND_CONFIG { \
 	"GIMBAL_ERASE_FIRMWARE_AND_CONFIG", \
 	3, \
@@ -25,7 +39,7 @@ typedef struct __mavlink_gimbal_erase_firmware_and_config_t
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 5, offsetof(mavlink_gimbal_erase_firmware_and_config_t, target_component) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_erase_firmware_and_config message
@@ -58,11 +72,7 @@ static inline uint16_t mavlink_msg_gimbal_erase_firmware_and_config_pack(uint8_t
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 }
 
 /**
@@ -97,11 +107,7 @@ static inline uint16_t mavlink_msg_gimbal_erase_firmware_and_config_pack_chan(ui
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 }
 
 /**
@@ -149,22 +155,28 @@ static inline void mavlink_msg_gimbal_erase_firmware_and_config_send(mavlink_cha
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, target_component);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 #else
 	mavlink_gimbal_erase_firmware_and_config_t packet;
 	packet.knock = knock;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_erase_firmware_and_config message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_erase_firmware_and_config_send_struct(mavlink_channel_t chan, const mavlink_gimbal_erase_firmware_and_config_t* gimbal_erase_firmware_and_config)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_erase_firmware_and_config_send(chan, gimbal_erase_firmware_and_config->target_system, gimbal_erase_firmware_and_config->target_component, gimbal_erase_firmware_and_config->knock);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)gimbal_erase_firmware_and_config, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 #endif
 }
 
@@ -184,22 +196,14 @@ static inline void mavlink_msg_gimbal_erase_firmware_and_config_send_buf(mavlink
 	_mav_put_uint8_t(buf, 4, target_system);
 	_mav_put_uint8_t(buf, 5, target_component);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, buf, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 #else
 	mavlink_gimbal_erase_firmware_and_config_t *packet = (mavlink_gimbal_erase_firmware_and_config_t *)msgbuf;
 	packet->knock = knock;
 	packet->target_system = target_system;
 	packet->target_component = target_component;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_CRC);
 #endif
 }
 #endif
@@ -247,11 +251,13 @@ static inline uint32_t mavlink_msg_gimbal_erase_firmware_and_config_get_knock(co
  */
 static inline void mavlink_msg_gimbal_erase_firmware_and_config_decode(const mavlink_message_t* msg, mavlink_gimbal_erase_firmware_and_config_t* gimbal_erase_firmware_and_config)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_erase_firmware_and_config->knock = mavlink_msg_gimbal_erase_firmware_and_config_get_knock(msg);
 	gimbal_erase_firmware_and_config->target_system = mavlink_msg_gimbal_erase_firmware_and_config_get_target_system(msg);
 	gimbal_erase_firmware_and_config->target_component = mavlink_msg_gimbal_erase_firmware_and_config_get_target_component(msg);
 #else
-	memcpy(gimbal_erase_firmware_and_config, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN;
+        memset(gimbal_erase_firmware_and_config, 0, MAVLINK_MSG_ID_GIMBAL_ERASE_FIRMWARE_AND_CONFIG_LEN);
+	memcpy(gimbal_erase_firmware_and_config, _MAV_PAYLOAD(msg), len);
 #endif
 }

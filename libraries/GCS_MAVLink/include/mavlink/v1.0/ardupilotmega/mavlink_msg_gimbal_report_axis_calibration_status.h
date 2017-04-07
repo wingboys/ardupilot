@@ -1,22 +1,36 @@
+#pragma once
 // MESSAGE GIMBAL_REPORT_AXIS_CALIBRATION_STATUS PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS 212
 
-typedef struct __mavlink_gimbal_report_axis_calibration_status_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_report_axis_calibration_status_t {
  uint8_t yaw_requires_calibration; /*< Whether or not the yaw axis requires calibration, see GIMBAL_AXIS_CALIBRATION_REQUIRED enumeration*/
  uint8_t pitch_requires_calibration; /*< Whether or not the pitch axis requires calibration, see GIMBAL_AXIS_CALIBRATION_REQUIRED enumeration*/
  uint8_t roll_requires_calibration; /*< Whether or not the roll axis requires calibration, see GIMBAL_AXIS_CALIBRATION_REQUIRED enumeration*/
-} mavlink_gimbal_report_axis_calibration_status_t;
+}) mavlink_gimbal_report_axis_calibration_status_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN 3
+#define MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN 3
 #define MAVLINK_MSG_ID_212_LEN 3
+#define MAVLINK_MSG_ID_212_MIN_LEN 3
 
 #define MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC 235
 #define MAVLINK_MSG_ID_212_CRC 235
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS { \
+	212, \
+	"GIMBAL_REPORT_AXIS_CALIBRATION_STATUS", \
+	3, \
+	{  { "yaw_requires_calibration", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_report_axis_calibration_status_t, yaw_requires_calibration) }, \
+         { "pitch_requires_calibration", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_report_axis_calibration_status_t, pitch_requires_calibration) }, \
+         { "roll_requires_calibration", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_gimbal_report_axis_calibration_status_t, roll_requires_calibration) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS { \
 	"GIMBAL_REPORT_AXIS_CALIBRATION_STATUS", \
 	3, \
@@ -25,7 +39,7 @@ typedef struct __mavlink_gimbal_report_axis_calibration_status_t
          { "roll_requires_calibration", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_gimbal_report_axis_calibration_status_t, roll_requires_calibration) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_report_axis_calibration_status message
@@ -58,11 +72,7 @@ static inline uint16_t mavlink_msg_gimbal_report_axis_calibration_status_pack(ui
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 }
 
 /**
@@ -97,11 +107,7 @@ static inline uint16_t mavlink_msg_gimbal_report_axis_calibration_status_pack_ch
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 }
 
 /**
@@ -149,22 +155,28 @@ static inline void mavlink_msg_gimbal_report_axis_calibration_status_send(mavlin
 	_mav_put_uint8_t(buf, 1, pitch_requires_calibration);
 	_mav_put_uint8_t(buf, 2, roll_requires_calibration);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 #else
 	mavlink_gimbal_report_axis_calibration_status_t packet;
 	packet.yaw_requires_calibration = yaw_requires_calibration;
 	packet.pitch_requires_calibration = pitch_requires_calibration;
 	packet.roll_requires_calibration = roll_requires_calibration;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_report_axis_calibration_status message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_report_axis_calibration_status_send_struct(mavlink_channel_t chan, const mavlink_gimbal_report_axis_calibration_status_t* gimbal_report_axis_calibration_status)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_report_axis_calibration_status_send(chan, gimbal_report_axis_calibration_status->yaw_requires_calibration, gimbal_report_axis_calibration_status->pitch_requires_calibration, gimbal_report_axis_calibration_status->roll_requires_calibration);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)gimbal_report_axis_calibration_status, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 #endif
 }
 
@@ -184,22 +196,14 @@ static inline void mavlink_msg_gimbal_report_axis_calibration_status_send_buf(ma
 	_mav_put_uint8_t(buf, 1, pitch_requires_calibration);
 	_mav_put_uint8_t(buf, 2, roll_requires_calibration);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, buf, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 #else
 	mavlink_gimbal_report_axis_calibration_status_t *packet = (mavlink_gimbal_report_axis_calibration_status_t *)msgbuf;
 	packet->yaw_requires_calibration = yaw_requires_calibration;
 	packet->pitch_requires_calibration = pitch_requires_calibration;
 	packet->roll_requires_calibration = roll_requires_calibration;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_CRC);
 #endif
 }
 #endif
@@ -247,11 +251,13 @@ static inline uint8_t mavlink_msg_gimbal_report_axis_calibration_status_get_roll
  */
 static inline void mavlink_msg_gimbal_report_axis_calibration_status_decode(const mavlink_message_t* msg, mavlink_gimbal_report_axis_calibration_status_t* gimbal_report_axis_calibration_status)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_report_axis_calibration_status->yaw_requires_calibration = mavlink_msg_gimbal_report_axis_calibration_status_get_yaw_requires_calibration(msg);
 	gimbal_report_axis_calibration_status->pitch_requires_calibration = mavlink_msg_gimbal_report_axis_calibration_status_get_pitch_requires_calibration(msg);
 	gimbal_report_axis_calibration_status->roll_requires_calibration = mavlink_msg_gimbal_report_axis_calibration_status_get_roll_requires_calibration(msg);
 #else
-	memcpy(gimbal_report_axis_calibration_status, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN;
+        memset(gimbal_report_axis_calibration_status, 0, MAVLINK_MSG_ID_GIMBAL_REPORT_AXIS_CALIBRATION_STATUS_LEN);
+	memcpy(gimbal_report_axis_calibration_status, _MAV_PAYLOAD(msg), len);
 #endif
 }

@@ -1,27 +1,39 @@
+#pragma once
 // MESSAGE GIMBAL_HOME_OFFSET_CALIBRATION_RESULT PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT 205
 
-typedef struct __mavlink_gimbal_home_offset_calibration_result_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_home_offset_calibration_result_t {
  uint8_t calibration_result; /*< The result of the home offset calibration*/
-} mavlink_gimbal_home_offset_calibration_result_t;
+}) mavlink_gimbal_home_offset_calibration_result_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN 1
+#define MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN 1
 #define MAVLINK_MSG_ID_205_LEN 1
+#define MAVLINK_MSG_ID_205_MIN_LEN 1
 
 #define MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC 63
 #define MAVLINK_MSG_ID_205_CRC 63
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT { \
+	205, \
+	"GIMBAL_HOME_OFFSET_CALIBRATION_RESULT", \
+	1, \
+	{  { "calibration_result", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_home_offset_calibration_result_t, calibration_result) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT { \
 	"GIMBAL_HOME_OFFSET_CALIBRATION_RESULT", \
 	1, \
 	{  { "calibration_result", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_home_offset_calibration_result_t, calibration_result) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_home_offset_calibration_result message
@@ -48,11 +60,7 @@ static inline uint16_t mavlink_msg_gimbal_home_offset_calibration_result_pack(ui
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 }
 
 /**
@@ -81,11 +89,7 @@ static inline uint16_t mavlink_msg_gimbal_home_offset_calibration_result_pack_ch
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 }
 
 /**
@@ -129,20 +133,26 @@ static inline void mavlink_msg_gimbal_home_offset_calibration_result_send(mavlin
 	char buf[MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN];
 	_mav_put_uint8_t(buf, 0, calibration_result);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 #else
 	mavlink_gimbal_home_offset_calibration_result_t packet;
 	packet.calibration_result = calibration_result;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_home_offset_calibration_result message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_home_offset_calibration_result_send_struct(mavlink_channel_t chan, const mavlink_gimbal_home_offset_calibration_result_t* gimbal_home_offset_calibration_result)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_home_offset_calibration_result_send(chan, gimbal_home_offset_calibration_result->calibration_result);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)gimbal_home_offset_calibration_result, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 #endif
 }
 
@@ -160,20 +170,12 @@ static inline void mavlink_msg_gimbal_home_offset_calibration_result_send_buf(ma
 	char *buf = (char *)msgbuf;
 	_mav_put_uint8_t(buf, 0, calibration_result);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, buf, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 #else
 	mavlink_gimbal_home_offset_calibration_result_t *packet = (mavlink_gimbal_home_offset_calibration_result_t *)msgbuf;
 	packet->calibration_result = calibration_result;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_CRC);
 #endif
 }
 #endif
@@ -201,9 +203,11 @@ static inline uint8_t mavlink_msg_gimbal_home_offset_calibration_result_get_cali
  */
 static inline void mavlink_msg_gimbal_home_offset_calibration_result_decode(const mavlink_message_t* msg, mavlink_gimbal_home_offset_calibration_result_t* gimbal_home_offset_calibration_result)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_home_offset_calibration_result->calibration_result = mavlink_msg_gimbal_home_offset_calibration_result_get_calibration_result(msg);
 #else
-	memcpy(gimbal_home_offset_calibration_result, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN;
+        memset(gimbal_home_offset_calibration_result, 0, MAVLINK_MSG_ID_GIMBAL_HOME_OFFSET_CALIBRATION_RESULT_LEN);
+	memcpy(gimbal_home_offset_calibration_result, _MAV_PAYLOAD(msg), len);
 #endif
 }

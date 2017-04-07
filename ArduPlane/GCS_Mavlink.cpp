@@ -353,6 +353,8 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 			curr_vel.x,  // X speed cm/s (+ve North)
 			curr_vel.y,  // Y speed cm/s (+ve East)
 			curr_vel.z, // Z speed cm/s (+ve up)
+			ahrs.pitch - radians(g.pitch_trim_cd*0.01f),
+			ahrs.roll,
 			ahrs.yaw_sensor,
 			(int8_t)plane.flight_stage);
 }

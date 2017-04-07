@@ -1,21 +1,34 @@
+#pragma once
 // MESSAGE GIMBAL_PERFORM_FACTORY_TESTS PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS 209
 
-typedef struct __mavlink_gimbal_perform_factory_tests_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_perform_factory_tests_t {
  uint8_t target_system; /*< System ID*/
  uint8_t target_component; /*< Component ID*/
-} mavlink_gimbal_perform_factory_tests_t;
+}) mavlink_gimbal_perform_factory_tests_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN 2
+#define MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN 2
 #define MAVLINK_MSG_ID_209_LEN 2
+#define MAVLINK_MSG_ID_209_MIN_LEN 2
 
 #define MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC 226
 #define MAVLINK_MSG_ID_209_CRC 226
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_PERFORM_FACTORY_TESTS { \
+	209, \
+	"GIMBAL_PERFORM_FACTORY_TESTS", \
+	2, \
+	{  { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_perform_factory_tests_t, target_system) }, \
+         { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_perform_factory_tests_t, target_component) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_PERFORM_FACTORY_TESTS { \
 	"GIMBAL_PERFORM_FACTORY_TESTS", \
 	2, \
@@ -23,7 +36,7 @@ typedef struct __mavlink_gimbal_perform_factory_tests_t
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_perform_factory_tests_t, target_component) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_perform_factory_tests message
@@ -53,11 +66,7 @@ static inline uint16_t mavlink_msg_gimbal_perform_factory_tests_pack(uint8_t sys
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 }
 
 /**
@@ -89,11 +98,7 @@ static inline uint16_t mavlink_msg_gimbal_perform_factory_tests_pack_chan(uint8_
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 }
 
 /**
@@ -139,21 +144,27 @@ static inline void mavlink_msg_gimbal_perform_factory_tests_send(mavlink_channel
 	_mav_put_uint8_t(buf, 0, target_system);
 	_mav_put_uint8_t(buf, 1, target_component);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 #else
 	mavlink_gimbal_perform_factory_tests_t packet;
 	packet.target_system = target_system;
 	packet.target_component = target_component;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_perform_factory_tests message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_perform_factory_tests_send_struct(mavlink_channel_t chan, const mavlink_gimbal_perform_factory_tests_t* gimbal_perform_factory_tests)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_perform_factory_tests_send(chan, gimbal_perform_factory_tests->target_system, gimbal_perform_factory_tests->target_component);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)gimbal_perform_factory_tests, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 #endif
 }
 
@@ -172,21 +183,13 @@ static inline void mavlink_msg_gimbal_perform_factory_tests_send_buf(mavlink_mes
 	_mav_put_uint8_t(buf, 0, target_system);
 	_mav_put_uint8_t(buf, 1, target_component);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, buf, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 #else
 	mavlink_gimbal_perform_factory_tests_t *packet = (mavlink_gimbal_perform_factory_tests_t *)msgbuf;
 	packet->target_system = target_system;
 	packet->target_component = target_component;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_CRC);
 #endif
 }
 #endif
@@ -224,10 +227,12 @@ static inline uint8_t mavlink_msg_gimbal_perform_factory_tests_get_target_compon
  */
 static inline void mavlink_msg_gimbal_perform_factory_tests_decode(const mavlink_message_t* msg, mavlink_gimbal_perform_factory_tests_t* gimbal_perform_factory_tests)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_perform_factory_tests->target_system = mavlink_msg_gimbal_perform_factory_tests_get_target_system(msg);
 	gimbal_perform_factory_tests->target_component = mavlink_msg_gimbal_perform_factory_tests_get_target_component(msg);
 #else
-	memcpy(gimbal_perform_factory_tests, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN;
+        memset(gimbal_perform_factory_tests, 0, MAVLINK_MSG_ID_GIMBAL_PERFORM_FACTORY_TESTS_LEN);
+	memcpy(gimbal_perform_factory_tests, _MAV_PAYLOAD(msg), len);
 #endif
 }

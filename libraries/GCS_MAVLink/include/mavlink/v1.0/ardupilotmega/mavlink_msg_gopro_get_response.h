@@ -1,21 +1,34 @@
+#pragma once
 // MESSAGE GOPRO_GET_RESPONSE PACKING
 
 #define MAVLINK_MSG_ID_GOPRO_GET_RESPONSE 217
 
-typedef struct __mavlink_gopro_get_response_t
-{
+MAVPACKED(
+typedef struct __mavlink_gopro_get_response_t {
  uint8_t cmd_id; /*< Command ID*/
  uint8_t value; /*< Value*/
-} mavlink_gopro_get_response_t;
+}) mavlink_gopro_get_response_t;
 
 #define MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN 2
+#define MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN 2
 #define MAVLINK_MSG_ID_217_LEN 2
+#define MAVLINK_MSG_ID_217_MIN_LEN 2
 
 #define MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC 163
 #define MAVLINK_MSG_ID_217_CRC 163
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GOPRO_GET_RESPONSE { \
+	217, \
+	"GOPRO_GET_RESPONSE", \
+	2, \
+	{  { "cmd_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gopro_get_response_t, cmd_id) }, \
+         { "value", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gopro_get_response_t, value) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GOPRO_GET_RESPONSE { \
 	"GOPRO_GET_RESPONSE", \
 	2, \
@@ -23,7 +36,7 @@ typedef struct __mavlink_gopro_get_response_t
          { "value", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gopro_get_response_t, value) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gopro_get_response message
@@ -53,11 +66,7 @@ static inline uint16_t mavlink_msg_gopro_get_response_pack(uint8_t system_id, ui
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GOPRO_GET_RESPONSE;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 }
 
 /**
@@ -89,11 +98,7 @@ static inline uint16_t mavlink_msg_gopro_get_response_pack_chan(uint8_t system_i
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GOPRO_GET_RESPONSE;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 }
 
 /**
@@ -139,21 +144,27 @@ static inline void mavlink_msg_gopro_get_response_send(mavlink_channel_t chan, u
 	_mav_put_uint8_t(buf, 0, cmd_id);
 	_mav_put_uint8_t(buf, 1, value);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 #else
 	mavlink_gopro_get_response_t packet;
 	packet.cmd_id = cmd_id;
 	packet.value = value;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)&packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)&packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)&packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gopro_get_response message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gopro_get_response_send_struct(mavlink_channel_t chan, const mavlink_gopro_get_response_t* gopro_get_response)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gopro_get_response_send(chan, gopro_get_response->cmd_id, gopro_get_response->value);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)gopro_get_response, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 #endif
 }
 
@@ -172,21 +183,13 @@ static inline void mavlink_msg_gopro_get_response_send_buf(mavlink_message_t *ms
 	_mav_put_uint8_t(buf, 0, cmd_id);
 	_mav_put_uint8_t(buf, 1, value);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, buf, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 #else
 	mavlink_gopro_get_response_t *packet = (mavlink_gopro_get_response_t *)msgbuf;
 	packet->cmd_id = cmd_id;
 	packet->value = value;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE, (const char *)packet, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_MIN_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_CRC);
 #endif
 }
 #endif
@@ -224,10 +227,12 @@ static inline uint8_t mavlink_msg_gopro_get_response_get_value(const mavlink_mes
  */
 static inline void mavlink_msg_gopro_get_response_decode(const mavlink_message_t* msg, mavlink_gopro_get_response_t* gopro_get_response)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gopro_get_response->cmd_id = mavlink_msg_gopro_get_response_get_cmd_id(msg);
 	gopro_get_response->value = mavlink_msg_gopro_get_response_get_value(msg);
 #else
-	memcpy(gopro_get_response, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN? msg->len : MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN;
+        memset(gopro_get_response, 0, MAVLINK_MSG_ID_GOPRO_GET_RESPONSE_LEN);
+	memcpy(gopro_get_response, _MAV_PAYLOAD(msg), len);
 #endif
 }

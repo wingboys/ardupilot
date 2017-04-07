@@ -1,22 +1,36 @@
+#pragma once
 // MESSAGE GIMBAL_AXIS_CALIBRATION_PROGRESS PACKING
 
 #define MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS 203
 
-typedef struct __mavlink_gimbal_axis_calibration_progress_t
-{
+MAVPACKED(
+typedef struct __mavlink_gimbal_axis_calibration_progress_t {
  uint8_t calibration_axis; /*< Which gimbal axis we're reporting calibration progress for*/
  uint8_t calibration_progress; /*< The current calibration progress for this axis, 0x64=100%*/
  uint8_t calibration_status; /*< The status of the running calibration*/
-} mavlink_gimbal_axis_calibration_progress_t;
+}) mavlink_gimbal_axis_calibration_progress_t;
 
 #define MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN 3
+#define MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN 3
 #define MAVLINK_MSG_ID_203_LEN 3
+#define MAVLINK_MSG_ID_203_MIN_LEN 3
 
 #define MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC 128
 #define MAVLINK_MSG_ID_203_CRC 128
 
 
 
+#if MAVLINK_COMMAND_24BIT
+#define MAVLINK_MESSAGE_INFO_GIMBAL_AXIS_CALIBRATION_PROGRESS { \
+	203, \
+	"GIMBAL_AXIS_CALIBRATION_PROGRESS", \
+	3, \
+	{  { "calibration_axis", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_gimbal_axis_calibration_progress_t, calibration_axis) }, \
+         { "calibration_progress", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_gimbal_axis_calibration_progress_t, calibration_progress) }, \
+         { "calibration_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_gimbal_axis_calibration_progress_t, calibration_status) }, \
+         } \
+}
+#else
 #define MAVLINK_MESSAGE_INFO_GIMBAL_AXIS_CALIBRATION_PROGRESS { \
 	"GIMBAL_AXIS_CALIBRATION_PROGRESS", \
 	3, \
@@ -25,7 +39,7 @@ typedef struct __mavlink_gimbal_axis_calibration_progress_t
          { "calibration_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_gimbal_axis_calibration_progress_t, calibration_status) }, \
          } \
 }
-
+#endif
 
 /**
  * @brief Pack a gimbal_axis_calibration_progress message
@@ -58,11 +72,7 @@ static inline uint16_t mavlink_msg_gimbal_axis_calibration_progress_pack(uint8_t
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
-#endif
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 }
 
 /**
@@ -97,11 +107,7 @@ static inline uint16_t mavlink_msg_gimbal_axis_calibration_progress_pack_chan(ui
 #endif
 
 	msg->msgid = MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
-#endif
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 }
 
 /**
@@ -149,22 +155,28 @@ static inline void mavlink_msg_gimbal_axis_calibration_progress_send(mavlink_cha
 	_mav_put_uint8_t(buf, 1, calibration_progress);
 	_mav_put_uint8_t(buf, 2, calibration_status);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 #else
 	mavlink_gimbal_axis_calibration_progress_t packet;
 	packet.calibration_axis = calibration_axis;
 	packet.calibration_progress = calibration_progress;
 	packet.calibration_status = calibration_status;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)&packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 #endif
+}
+
+/**
+ * @brief Send a gimbal_axis_calibration_progress message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_gimbal_axis_calibration_progress_send_struct(mavlink_channel_t chan, const mavlink_gimbal_axis_calibration_progress_t* gimbal_axis_calibration_progress)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_gimbal_axis_calibration_progress_send(chan, gimbal_axis_calibration_progress->calibration_axis, gimbal_axis_calibration_progress->calibration_progress, gimbal_axis_calibration_progress->calibration_status);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)gimbal_axis_calibration_progress, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 #endif
 }
 
@@ -184,22 +196,14 @@ static inline void mavlink_msg_gimbal_axis_calibration_progress_send_buf(mavlink
 	_mav_put_uint8_t(buf, 1, calibration_progress);
 	_mav_put_uint8_t(buf, 2, calibration_status);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, buf, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 #else
 	mavlink_gimbal_axis_calibration_progress_t *packet = (mavlink_gimbal_axis_calibration_progress_t *)msgbuf;
 	packet->calibration_axis = calibration_axis;
 	packet->calibration_progress = calibration_progress;
 	packet->calibration_status = calibration_status;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS, (const char *)packet, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_MIN_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_CRC);
 #endif
 }
 #endif
@@ -247,11 +251,13 @@ static inline uint8_t mavlink_msg_gimbal_axis_calibration_progress_get_calibrati
  */
 static inline void mavlink_msg_gimbal_axis_calibration_progress_decode(const mavlink_message_t* msg, mavlink_gimbal_axis_calibration_progress_t* gimbal_axis_calibration_progress)
 {
-#if MAVLINK_NEED_BYTE_SWAP
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	gimbal_axis_calibration_progress->calibration_axis = mavlink_msg_gimbal_axis_calibration_progress_get_calibration_axis(msg);
 	gimbal_axis_calibration_progress->calibration_progress = mavlink_msg_gimbal_axis_calibration_progress_get_calibration_progress(msg);
 	gimbal_axis_calibration_progress->calibration_status = mavlink_msg_gimbal_axis_calibration_progress_get_calibration_status(msg);
 #else
-	memcpy(gimbal_axis_calibration_progress, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN? msg->len : MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN;
+        memset(gimbal_axis_calibration_progress, 0, MAVLINK_MSG_ID_GIMBAL_AXIS_CALIBRATION_PROGRESS_LEN);
+	memcpy(gimbal_axis_calibration_progress, _MAV_PAYLOAD(msg), len);
 #endif
 }

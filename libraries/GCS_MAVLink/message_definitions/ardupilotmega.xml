@@ -958,6 +958,8 @@
 	    <field type="float" name="vx">Fused velocity in North direction in NEU frame in cm/s</field>
 	    <field type="float" name="vy">Fused velocity in East direction in NEU frame in cm/s</field>
 	    <field type="float" name="vz">Fused velocity in Up direction in NEU frame in cm/s</field>
+	    <field type="float" name="pitch">pitch in randians</field>
+	    <field type="float" name="roll">roll in radians</field>
 	    <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
 	    <field type="int8_t" name="flight_stage">stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)</field>
     </message>
