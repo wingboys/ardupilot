@@ -628,11 +628,9 @@ bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
 	switch(id)
 	{
 		case	MSG_LOCATION:
-		case	MSG_EXTENDED_STATUS1:
 		case	MSG_EXTENDED_STATUS2:
 		case	MSG_NAV_CONTROLLER_OUTPUT:
 		case	MSG_RAW_IMU1:
-		case	MSG_RAW_IMU2:
 		case	MSG_RAW_IMU3:
 		case	MSG_SERVO_OUT:
 		case	MSG_STATUSTEXT:
@@ -675,6 +673,8 @@ bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
 		case 	MSG_HEARTBEAT:
 		case	MSG_MISSION_ITEM_REACHED:
 		case 	MSG_LOCATION_NEITZKE:
+		case	MSG_EXTENDED_STATUS1: //for the power(current/voltage) info
+		case	MSG_RAW_IMU2: //for the baro temperature and pressure info
 			return true;
 	}
 
