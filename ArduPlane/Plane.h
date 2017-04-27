@@ -689,6 +689,9 @@ private:
     // time that rudder arming has been running
     uint32_t rudder_arm_timer;
 
+    // indicate whether the arm has tilt to fwd flight
+    bool tilt_to_fwd = false;
+
     void demo_servos(uint8_t i);
     void adjust_nav_pitch_throttle(void);
     void update_load_factor(void);

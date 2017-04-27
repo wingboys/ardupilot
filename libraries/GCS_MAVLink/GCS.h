@@ -287,7 +287,7 @@ private:
     bool neitzkePilot_detected;
 
     // indicate which system status is neitzke
-    MAV_STATE neitzke_system_status;
+    MAV_STATE gdpilot_system_status;
 
     // a vehicle can optionally snoop on messages for other systems
     static void (*msg_snoop)(const mavlink_message_t* msg);
@@ -333,6 +333,7 @@ private:
     bool have_flow_control(void);
 
     bool is_message_nesesary_for_np(enum ap_message id);
+
 };
 
 #endif // __GCS_H

@@ -575,6 +575,10 @@ bool Plane::suppress_throttle(void)
         return false;
     }
 
+    if (control_mode==AUTO && tilt_to_fwd)
+    {
+    	return false;
+    }
     bool gps_movement = (gps.status() >= AP_GPS::GPS_OK_FIX_2D && gps.ground_speed() >= 5);
     
     if (control_mode==AUTO && 
