@@ -577,6 +577,7 @@ bool Plane::suppress_throttle(void)
 
     if (control_mode==AUTO && tilt_to_fwd)
     {
+	throttle_suppressed = false;
     	return false;
     }
     bool gps_movement = (gps.status() >= AP_GPS::GPS_OK_FIX_2D && gps.ground_speed() >= 5);
