@@ -506,6 +506,36 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     // zero rangefinder state, start to accumulate good samples now
     memset(&rangefinder_state, 0, sizeof(rangefinder_state));
 #endif
+    
+#ifdef USE_VWP
+
+    // Here I restore the original version of the mission (in case it should be reloaded)
+    gcs_send_text_fmt(PSTR("Restoring original mission"));
+    AP_Mission::Mission_Command wp;
+    uint16_t num_commands = mission.num_commands();
+    gcs_send_text_fmt(PSTR("Number of commands: %d"),num_commands);
+    mission.get_next_nav_cmd(num_commands-1, wp);
+    uint16_t landing_wp_index = wp.index;
+    GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_INFO, "Landing WP index: %d",landing_wp_index);
+
+    // If the last command is the landing
+    if(wp.id==MAV_CMD_NAV_LAND)
+    {
+	    // I remove the three previous commands (virtual waypoints)
+	    uint16_t start = num_commands-4;
+	    gcs_send_text_fmt(PSTR("Truncate mission at index: %d"),start);
+	    mission.truncate(start);
+	    gcs_send_text_fmt(PSTR("Number of commands after truncate: %d"),mission.num_commands());
+	    gcs_send_text_fmt(PSTR("Re-adding landing WP"));
+	    // then, I re-add the landing waypoint
+	    mission.add_cmd(wp);
+	    gcs_send_text_fmt(PSTR("Number of commands after re-adding landing WP: %d"),mission.num_commands());
+	    // I update the mission
+	    mission.update();
+    }
+
+#endif
+
 }
 
 void Plane::loiter_set_direction_wp(const AP_Mission::Mission_Command& cmd)
