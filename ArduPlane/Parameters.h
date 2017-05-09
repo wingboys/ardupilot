@@ -326,6 +326,7 @@ public:
 	k_param_heading_wind, // 248
 	k_param_dist_vwp1,
 	k_param_dist_incr,
+	k_param_vwp_enabled,
 
         // 254,255: reserved
     };
@@ -333,6 +334,7 @@ public:
     AP_Float heading_wind;
     AP_Float dist_vwp1;
     AP_Float dist_incr;
+    AP_Int8  vwp_enabled;
 
     AP_Int16 format_version;
     AP_Int8 software_type;

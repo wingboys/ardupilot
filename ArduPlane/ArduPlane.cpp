@@ -36,6 +36,8 @@ int _flag_cnt = 0;
 bool mission_rewrote = false;
 bool mission_restored = false;
 
+bool vwp_status_printed = false;
+
 /*
   scheduler table - all regular tasks are listed here, along with how
   often they should be called (in 20ms units) and the maximum time
@@ -102,10 +104,10 @@ void Plane::setup()
 
     rssi.init();
 
-    init_ardupilot();
+    init_ardupilot();   
 
     // initialise the main loop scheduler
-    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks));
+    scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks)); 
 }
 
 void Plane::loop()
@@ -303,30 +305,36 @@ void Plane::update_aux(void)
 void Plane::one_second_loop()
 {
   
-// UNCOMMENT THE FOLLOWING SECTION TO TEST THE WRITING OF VIRTUAL WAYPOINTS on EEPROM WITHOUT FLYING
+  if(!vwp_status_printed)
+  {
+      if(g.vwp_enabled==0)
+	gcs_send_text_fmt(PSTR("VWP disabled"));
+      else
+	gcs_send_text_fmt(PSTR("VWP enabled"));  
+      vwp_status_printed = true;
+  }
 
-// Begin Section
+/*    if(g.vwp_enabled)
+    {
+	one_sec_cnt += 1;
 
-//   one_sec_cnt += 1;
-//   
-//   // After 60 seconds from the startup, the virtual waypoints will be added
-//   if(one_sec_cnt > 60 && !mission_rewrote)
-//   {
-//     gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
-//     one_time_rewrite();
-//     mission_rewrote = true;
-//   }
-//   
-//   // The following section is used for restoring the original mission
-//   if(one_sec_cnt > 120 && !mission_restored)
-//   {
-//     gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
-//     one_time_restore();
-//     mission_restored = true;
-//   }
-  
-// End Section 
-  
+	// After 60 seconds from the startup, the virtual waypoints will be added
+	if(one_sec_cnt > 60 && !mission_rewrote)
+	{
+	  gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
+	  one_time_rewrite();
+	  mission_rewrote = true;
+	}
+
+	// The following section is used for restoring the original mission
+	if(one_sec_cnt > 120 && !mission_restored)
+	{
+	  gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
+	  one_time_restore();
+	  mission_restored = true;
+	}
+	
+    } */ 
   
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
@@ -370,7 +378,7 @@ void Plane::one_second_loop()
 void Plane::one_time_rewrite()
 {
     
-    gcs_send_text_fmt(PSTR("Number of commands: %d"),mission.num_commands());
+    gcs_send_text_fmt(PSTR("APMF - Number of commands: %d"),mission.num_commands());
     
     AP_Mission::Mission_Command _lastMWP;    
     AP_Mission::Mission_Command _landWP;

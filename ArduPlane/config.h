@@ -482,3 +482,7 @@
 #ifndef DIST_INCR_DEFAULT
 #define DIST_INCR_DEFAULT 50.0f
 #endif
+
+#ifndef VWP_ENABLE_DEFAULT
+#define VWP_ENABLE_DEFAULT 0
+#endif

@@ -94,7 +94,7 @@
 #include <AP_OpticalFlow/AP_OpticalFlow.h>     // Optical Flow library
 #include <AP_RSSI/AP_RSSI.h>                   // RSSI Library
 
-// #define USE_VWP
+// #define TEST_VWP
 
 // Configuration
 #include "config.h"

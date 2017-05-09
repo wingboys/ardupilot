@@ -15,6 +15,15 @@
 
 const AP_Param::Info Plane::var_info[] PROGMEM = {
   
+    // @Param: VWP_ENABLE
+    // @DisplayName: Enabling virtual waypoint feature
+    // @Description: This parameter allows to enable/disable the virtual waypoint feature. By default this feature is disabled.
+    // @User: Standard
+    // @Units: Boolean
+    // @Range: 0 1
+    // @Increment: 1
+    GSCALAR(vwp_enabled,            "VWP_ENABLE",     VWP_ENABLE_DEFAULT),
+  
     // @Param: HEADING_WIND
     // @DisplayName: Heading with respect to the wind direction
     // @Description: Desc - Heading with respect to the wind direction

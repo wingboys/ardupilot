@@ -432,50 +432,50 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	    loc_vwp3.options = 1<<0;
 	    gcs_send_text_fmt(PSTR("VWP3:%10.6f,%10.6f,%8.3f"),loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0);
 
-#ifdef USE_VWP
+	    if(g.vwp_enabled)
+	    {
+		// Update the mission
+		gcs_send_text_fmt(PSTR("[%d]-REWRITE_M"),flag_cnt);
 
-	    // Update the mission
-	    gcs_send_text_fmt(PSTR("[%d]-REWRITE_M"),flag_cnt);
+		// Remove the old landing waypoint
+		gcs_send_text_fmt(PSTR("OLD L_WP IDX:%d"),wp.index);
+		gcs_send_text_fmt(PSTR("Before truncate:%d"),mission.num_commands());
+		mission.truncate(cmd.index+2);
+		gcs_send_text_fmt(PSTR("After truncate:%d"),mission.num_commands());
 
-	    // Remove the old landing waypoint
-	    gcs_send_text_fmt(PSTR("OLD L_WP IDX:%d"),wp.index);
-	    gcs_send_text_fmt(PSTR("Before truncate:%d"),mission.num_commands());
-	    mission.truncate(cmd.index+2);
-	    gcs_send_text_fmt(PSTR("After truncate:%d"),mission.num_commands());
+		// Add the three virtual waypoints - The first VWP to be added is the farthest VWP
 
-	    // Add the three virtual waypoints - The first VWP to be added is the farthest VWP
+		AP_Mission::Mission_Command vwp3 = {};
+		// Copy all the properties of the last mission waypoint
+		vwp3 = next_wp;
+		// Overwrite command id and waypoint coordinates
+		vwp3.id = MAV_CMD_NAV_WAYPOINT;
+		vwp3.content.location = loc_vwp3;
+		// Add the new command to the mission
+		mission.add_cmd(vwp3);
 
-	    AP_Mission::Mission_Command vwp3 = {};
-	    // Copy all the properties of the last mission waypoint
-	    vwp3 = next_wp;
-	    // Overwrite command id and waypoint coordinates
-	    vwp3.id = MAV_CMD_NAV_WAYPOINT;
-	    vwp3.content.location = loc_vwp3;
-	    // Add the new command to the mission
-	    mission.add_cmd(vwp3);
+		AP_Mission::Mission_Command vwp2 = {};
+		vwp2 = next_wp;
+		vwp2.id = MAV_CMD_NAV_WAYPOINT;
+		vwp2.content.location = loc_vwp2;
+		mission.add_cmd(vwp2);
 
-	    AP_Mission::Mission_Command vwp2 = {};
-	    vwp2 = next_wp;
-	    vwp2.id = MAV_CMD_NAV_WAYPOINT;
-	    vwp2.content.location = loc_vwp2;
-	    mission.add_cmd(vwp2);
+		AP_Mission::Mission_Command vwp1 = {};
+		vwp1 = next_wp;
+		vwp1.id = MAV_CMD_NAV_WAYPOINT;
+		vwp1.content.location = loc_vwp1;
+		mission.add_cmd(vwp1);
 
-	    AP_Mission::Mission_Command vwp1 = {};
-	    vwp1 = next_wp;
-	    vwp1.id = MAV_CMD_NAV_WAYPOINT;
-	    vwp1.content.location = loc_vwp1;
-	    mission.add_cmd(vwp1);
+		// For the moment the UAV will still land at the original landing waypoint
+		mission.add_cmd(wp);
 
-	    // For the moment the UAV will still land at the original landing waypoint
-	    mission.add_cmd(wp);
-
-	    gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
-	    mission.update();
-	    gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());
-
-#endif
-
-	    ++flag_cnt;
+		gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
+		mission.update();
+		gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());      
+	      
+	    }
+	    
+	++flag_cnt;
 
 	}
     }
@@ -507,34 +507,35 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     memset(&rangefinder_state, 0, sizeof(rangefinder_state));
 #endif
     
-#ifdef USE_VWP
-
-    // Here I restore the original version of the mission (in case it should be reloaded)
-    gcs_send_text_fmt(PSTR("Restoring original mission"));
-    AP_Mission::Mission_Command wp;
-    uint16_t num_commands = mission.num_commands();
-    gcs_send_text_fmt(PSTR("Number of commands: %d"),num_commands);
-    mission.get_next_nav_cmd(num_commands-1, wp);
-    uint16_t landing_wp_index = wp.index;
-    GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_INFO, "Landing WP index: %d",landing_wp_index);
-
-    // If the last command is the landing
-    if(wp.id==MAV_CMD_NAV_LAND)
+    if(g.vwp_enabled)
     {
-	    // I remove the three previous commands (virtual waypoints)
-	    uint16_t start = num_commands-4;
-	    gcs_send_text_fmt(PSTR("Truncate mission at index: %d"),start);
-	    mission.truncate(start);
-	    gcs_send_text_fmt(PSTR("Number of commands after truncate: %d"),mission.num_commands());
-	    gcs_send_text_fmt(PSTR("Re-adding landing WP"));
-	    // then, I re-add the landing waypoint
-	    mission.add_cmd(wp);
-	    gcs_send_text_fmt(PSTR("Number of commands after re-adding landing WP: %d"),mission.num_commands());
-	    // I update the mission
-	    mission.update();
-    }
 
-#endif
+	// Here I restore the original version of the mission (in case it should be reloaded)
+	gcs_send_text_fmt(PSTR("Restoring original mission"));
+	AP_Mission::Mission_Command wp;
+	uint16_t num_commands = mission.num_commands();
+	gcs_send_text_fmt(PSTR("Number of commands: %d"),num_commands);
+	mission.get_next_nav_cmd(num_commands-1, wp);
+	uint16_t landing_wp_index = wp.index;
+	GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_INFO, "Landing WP index: %d",landing_wp_index);
+
+	// If the last command is the landing
+	if(wp.id==MAV_CMD_NAV_LAND)
+	{
+		// I remove the three previous commands (virtual waypoints)
+		uint16_t start = num_commands-4;
+		gcs_send_text_fmt(PSTR("Truncate mission at index: %d"),start);
+		mission.truncate(start);
+		gcs_send_text_fmt(PSTR("Number of commands after truncate: %d"),mission.num_commands());
+		gcs_send_text_fmt(PSTR("Re-adding landing WP"));
+		// then, I re-add the landing waypoint
+		mission.add_cmd(wp);
+		gcs_send_text_fmt(PSTR("Number of commands after re-adding landing WP: %d"),mission.num_commands());
+		// I update the mission
+		mission.update();
+	}
+	
+    }
 
 }
 
