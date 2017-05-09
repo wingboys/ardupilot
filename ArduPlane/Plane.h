@@ -976,6 +976,9 @@ private:
     void dataflash_periodic(void);
     uint16_t throttle_min(void) const;
     
+    void one_time_rewrite();
+    void one_time_restore();
+    
 public:
     void mavlink_delay_cb();
     void failsafe_check(void);

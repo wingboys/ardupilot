@@ -20,7 +20,7 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         // set land_complete to false to stop us zeroing the throttle
         auto_state.land_complete = false;
         auto_state.sink_rate = 0;
-
+// 
         // set takeoff_complete to true so we don't add extra evevator
         // except in a takeoff
         auto_state.takeoff_complete = true;
@@ -397,9 +397,9 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	    float thetaWind = 0.0f;
 	    float new_theta_vwp = 0.0f;
 	    
-	    float heading_wind = 90.0f;
-	    float dist_vwp1 = 50.0f;
-	    float dist_incr = 100.0f;
+	    float heading_wind = g.heading_wind;
+	    float dist_vwp1 = g.dist_vwp1;
+	    float dist_incr = g.dist_incr;
 
 	    thetaWind = atan2(windY,windX);
 	    // New theta is the wind direction + 90 degrees

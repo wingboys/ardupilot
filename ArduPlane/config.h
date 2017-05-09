@@ -470,3 +470,15 @@
 #else
 #define FIRMWARE_STRING THISFIRMWARE " (" GIT_VERSION ")"
 #endif
+
+#ifndef HEADING_WIND_DEFAULT
+#define HEADING_WIND_DEFAULT 180.0f
+#endif
+
+#ifndef DIST_WP1_DEFAULT
+#define DIST_WP1_DEFAULT 50.0f
+#endif
+
+#ifndef DIST_INCR_DEFAULT
+#define DIST_INCR_DEFAULT 50.0f
+#endif
