@@ -307,23 +307,23 @@ void Plane::one_second_loop()
 
 // Begin Section
 
-  one_sec_cnt += 1;
-  
-  // After 60 seconds from the startup, the virtual waypoints will be added
-  if(one_sec_cnt > 60 && !mission_rewrote)
-  {
-    gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
-    one_time_rewrite();
-    mission_rewrote = true;
-  }
-  
-  // The following section is used for restoring the original mission
-  if(one_sec_cnt > 120 && !mission_restored)
-  {
-    gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
-    one_time_restore();
-    mission_restored = true;
-  }
+//   one_sec_cnt += 1;
+//   
+//   // After 60 seconds from the startup, the virtual waypoints will be added
+//   if(one_sec_cnt > 60 && !mission_rewrote)
+//   {
+//     gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
+//     one_time_rewrite();
+//     mission_rewrote = true;
+//   }
+//   
+//   // The following section is used for restoring the original mission
+//   if(one_sec_cnt > 120 && !mission_restored)
+//   {
+//     gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
+//     one_time_restore();
+//     mission_restored = true;
+//   }
   
 // End Section 
   
