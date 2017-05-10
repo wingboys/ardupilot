@@ -118,6 +118,7 @@ enum log_messages {
 #if OPTFLOW == ENABLED
     ,LOG_OPTFLOW_MSG
 #endif
+    ,LOG_VWP_MSG
 };
 
 #define MASK_LOG_ATTITUDE_FAST          (1<<0)

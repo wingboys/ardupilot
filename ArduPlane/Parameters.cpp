@@ -31,7 +31,7 @@ const AP_Param::Info Plane::var_info[] PROGMEM = {
     // @Units: Degrees
     // @Range: 0 180
     // @Increment: 1
-    GSCALAR(heading_wind,            "HEADING_WIND",     HEADING_WIND_DEFAULT),
+    GSCALAR(heading_wind,            "VWP_HEADING_WIND",     HEADING_WIND_DEFAULT),
 
     // @Param: DIST_VWP1
     // @DisplayName: Distance of VWP1 from landing WP
@@ -40,7 +40,7 @@ const AP_Param::Info Plane::var_info[] PROGMEM = {
     // @Units: Meters
     // @Range: 20 500
     // @Increment: 1
-    GSCALAR(dist_vwp1,            "DIST_VWP1",     DIST_WP1_DEFAULT),
+    GSCALAR(dist_vwp1,            "VWP_DIST_VWP1",     DIST_WP1_DEFAULT),
 
     // @Param: DIST_INCR
     // @DisplayName: Distance of VWP2 from landing WP
@@ -49,7 +49,7 @@ const AP_Param::Info Plane::var_info[] PROGMEM = {
     // @Units: Meters
     // @Range: 20 500
     // @Increment: 1
-    GSCALAR(dist_incr,            "DIST_INCR",     DIST_INCR_DEFAULT), 
+    GSCALAR(dist_incr,            "VWP_DIST_INCR",     DIST_INCR_DEFAULT), 
   
     // @Param: FORMAT_VERSION
     // @DisplayName: Eeprom format version number

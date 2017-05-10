@@ -348,7 +348,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     mission.get_next_nav_cmd(cmd.index+2, wp);
 
     gcs_send_text_fmt(PSTR("WP(%d),%d,%10.6f,%10.6f,%8.3f"),cmd.index,cmd.index,cmd.content.location.lat/10000000.0f,cmd.content.location.lng/10000000.0f,cmd.content.location.alt/100.0);
-
+    
     if(wp.id == MAV_CMD_NAV_LAND && !flag)
     {
 	//This flag is used to make sure I rewrite the last part of the mission only once.
@@ -367,117 +367,130 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	float windThreshold = 2.0f;
 
 	gcs_send_text_fmt(PSTR("WIND_SPD:%5.2f"),modWind);
+	
+	// WIND THRESHOLD DISABLED
 	// If the wind speed is higher than the threshold, I generate the virtual waypoints, otherwise I don't modify the mission
-	if(modWind > windThreshold)
+	// if(modWind > windThreshold)
+	// {
+
+	// Conversion of latitude and logitude from degrees to meters (The reference WP for the conversion is the landing WP)
+	// More information at: https://knowledge.safe.com/articles/725/calculating-accurate-length-in-meters-for-lat-long.html
+	float latr = (wp.content.location.lat/10000000.0f)*3.1415/180.0;
+	float lngr = (wp.content.location.lng/10000000.0f)*3.1415/180.0;
+
+	float mdlat = 111132.954-559.822*cos(2*latr)+1.175*cos(4*latr);
+	float mdlng = 111132.954*cos(latr);
+
+	gcs_send_text_fmt(PSTR("LLr:%12.4f,%12.4f"),latr,lngr);
+	gcs_send_text_fmt(PSTR("LLm:%12.4f,%12.4f"),mdlat,mdlng);
+
+	// Coordinates of the virtual waypoints
+	Location loc_vwp1, loc_vwp2, loc_vwp3;
+	Location lwp = wp.content.location;
+
+	// Next waypoint mission should be the last mission WP
+	AP_Mission::Mission_Command next_wp;
+	mission.get_next_nav_cmd(cmd.index+1, next_wp);
+
+	gcs_send_text_fmt(PSTR("LAST M_WP:%10.6f,%10.6f,%8.3f"),next_wp.content.location.lat/10000000.0f,next_wp.content.location.lng/10000000.0f,next_wp.content.location.alt/100.0);
+
+	// Default distance of VWP when there is no wind
+	// Direction of the Wind (rad)
+	float thetaWind = 0.0f;
+	float new_theta_vwp = 0.0f;
+	
+	float heading_wind = g.heading_wind;
+	float dist_vwp1 = g.dist_vwp1;
+	float dist_incr = g.dist_incr;
+
+	thetaWind = atan2(windY,windX);
+	// New theta is the wind direction + 90 degrees
+	new_theta_vwp = thetaWind + heading_wind*3.1415/180.0f;
+
+	gcs_send_text_fmt(PSTR("WIND_DIR:%f"),thetaWind*180.0/3.1415);
+	gcs_send_text_fmt(PSTR("OLD L_WP:%10.6f,%10.6f,%8.3f"),lwp.lat/10000000.0f,lwp.lng/10000000.0f,lwp.alt/100.0);
+	gcs_send_text_fmt(PSTR("VWPS_DIRd:%f"),new_theta_vwp*180.0/3.1415);
+
+	// Calculate the coordinates of the three virtual waypoints
+	loc_vwp1.lat = lwp.lat + (dist_vwp1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
+	loc_vwp1.lng = lwp.lng + (dist_vwp1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	// The altitude is the same as the altitude of the last waypoint mission
+	loc_vwp1.alt = next_wp.content.location.alt;
+	loc_vwp1.options = 1<<0;
+	
+	Log_Write_VWP(99,loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0f,1);
+	gcs_send_text_fmt(PSTR("VWP1:%10.6f,%10.6f,%8.3f"),loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0);
+
+	loc_vwp2.lat = lwp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
+	loc_vwp2.lng = lwp.lng + ((dist_vwp1+dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	// The altitude is the same as the altitude of the last waypoint mission
+	loc_vwp2.alt = next_wp.content.location.alt;
+	loc_vwp2.options = 1<<0;
+	
+	Log_Write_VWP(99,loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0f,1);
+	gcs_send_text_fmt(PSTR("VWP2:%10.6f,%10.6f,%8.3f"),loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0);
+	
+	loc_vwp3.lat = lwp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
+	loc_vwp3.lng = lwp.lng + ((dist_vwp1+2.0*dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	// The altitude is the same as the altitude of the last waypoint mission
+	loc_vwp3.alt = next_wp.content.location.alt;
+	loc_vwp3.options = 1<<0;
+	
+	Log_Write_VWP(99,loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0f,1);
+	gcs_send_text_fmt(PSTR("VWP3:%10.6f,%10.6f,%8.3f"),loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0);
+
+	if(g.vwp_enabled)
 	{
+	    // Update the mission
+	    gcs_send_text_fmt(PSTR("[%d]-REWRITE_M"),flag_cnt);
 
-	    // Conversion of latitude and logitude from degrees to meters (The reference WP for the conversion is the landing WP)
-	    // More information at: https://knowledge.safe.com/articles/725/calculating-accurate-length-in-meters-for-lat-long.html
-	    float latr = (wp.content.location.lat/10000000.0f)*3.1415/180.0;
-	    float lngr = (wp.content.location.lng/10000000.0f)*3.1415/180.0;
+	    // Remove the old landing waypoint
+	    gcs_send_text_fmt(PSTR("OLD L_WP IDX:%d"),wp.index);
+	    gcs_send_text_fmt(PSTR("Before truncate:%d"),mission.num_commands());
+	    mission.truncate(cmd.index+2);
+	    gcs_send_text_fmt(PSTR("After truncate:%d"),mission.num_commands());
 
-	    float mdlat = 111132.954-559.822*cos(2*latr)+1.175*cos(4*latr);
-	    float mdlng = 111132.954*cos(latr);
+	    // Add the three virtual waypoints - The first VWP to be added is the farthest VWP
 
-	    gcs_send_text_fmt(PSTR("LLr:%12.4f,%12.4f"),latr,lngr);
-	    gcs_send_text_fmt(PSTR("LLm:%12.4f,%12.4f"),mdlat,mdlng);
+	    AP_Mission::Mission_Command vwp3 = {};
+	    // Copy all the properties of the last mission waypoint
+	    vwp3 = next_wp;
+	    // Overwrite command id and waypoint coordinates
+	    vwp3.id = MAV_CMD_NAV_WAYPOINT;
+	    vwp3.content.location = loc_vwp3;
+	    // Add the new command to the mission
+	    mission.add_cmd(vwp3);
 
-	    // Coordinates of the virtual waypoints
-	    Location loc_vwp1, loc_vwp2, loc_vwp3;
-	    Location lwp = wp.content.location;
+	    AP_Mission::Mission_Command vwp2 = {};
+	    vwp2 = next_wp;
+	    vwp2.id = MAV_CMD_NAV_WAYPOINT;
+	    vwp2.content.location = loc_vwp2;
+	    mission.add_cmd(vwp2);
 
-	    // Next waypoint mission should be the last mission WP
-	    AP_Mission::Mission_Command next_wp;
-	    mission.get_next_nav_cmd(cmd.index+1, next_wp);
+	    AP_Mission::Mission_Command vwp1 = {};
+	    vwp1 = next_wp;
+	    vwp1.id = MAV_CMD_NAV_WAYPOINT;
+	    vwp1.content.location = loc_vwp1;
+	    mission.add_cmd(vwp1);
 
-	    gcs_send_text_fmt(PSTR("LAST M_WP:%10.6f,%10.6f,%8.3f"),next_wp.content.location.lat/10000000.0f,next_wp.content.location.lng/10000000.0f,next_wp.content.location.alt/100.0);
+	    // For the moment the UAV will still land at the original landing waypoint
+	    mission.add_cmd(wp);
 
-	    // Default distance of VWP when there is no wind
-	    // Direction of the Wind (rad)
-	    float thetaWind = 0.0f;
-	    float new_theta_vwp = 0.0f;
-	    
-	    float heading_wind = g.heading_wind;
-	    float dist_vwp1 = g.dist_vwp1;
-	    float dist_incr = g.dist_incr;
-
-	    thetaWind = atan2(windY,windX);
-	    // New theta is the wind direction + 90 degrees
-	    new_theta_vwp = thetaWind + heading_wind*3.1415/180.0f;
-
-	    gcs_send_text_fmt(PSTR("WIND_DIR:%f"),thetaWind*180.0/3.1415);
-	    gcs_send_text_fmt(PSTR("OLD L_WP:%10.6f,%10.6f,%8.3f"),lwp.lat/10000000.0f,lwp.lng/10000000.0f,lwp.alt/100.0);
-	    gcs_send_text_fmt(PSTR("VWPS_DIRd:%f"),new_theta_vwp*180.0/3.1415);
-
-	    // Calculate the coordinates of the three virtual waypoints
-	    loc_vwp1.lat = lwp.lat + (dist_vwp1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	    loc_vwp1.lng = lwp.lng + (dist_vwp1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-	    // The altitude is the same as the altitude of the last waypoint mission
-	    loc_vwp1.alt = next_wp.content.location.alt;
-	    loc_vwp1.options = 1<<0;
-
-	    gcs_send_text_fmt(PSTR("VWP1:%10.6f,%10.6f,%8.3f"),loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0);
-
-	    loc_vwp2.lat = lwp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	    loc_vwp2.lng = lwp.lng + ((dist_vwp1+dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-	    // The altitude is the same as the altitude of the last waypoint mission
-	    loc_vwp2.alt = next_wp.content.location.alt;
-	    loc_vwp2.options = 1<<0;
-	    gcs_send_text_fmt(PSTR("VWP2:%10.6f,%10.6f,%8.3f"),loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0);
-
-	    loc_vwp3.lat = lwp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	    loc_vwp3.lng = lwp.lng + ((dist_vwp1+2.0*dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-	    // The altitude is the same as the altitude of the last waypoint mission
-	    loc_vwp3.alt = next_wp.content.location.alt;
-	    loc_vwp3.options = 1<<0;
-	    gcs_send_text_fmt(PSTR("VWP3:%10.6f,%10.6f,%8.3f"),loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0);
-
-	    if(g.vwp_enabled)
-	    {
-		// Update the mission
-		gcs_send_text_fmt(PSTR("[%d]-REWRITE_M"),flag_cnt);
-
-		// Remove the old landing waypoint
-		gcs_send_text_fmt(PSTR("OLD L_WP IDX:%d"),wp.index);
-		gcs_send_text_fmt(PSTR("Before truncate:%d"),mission.num_commands());
-		mission.truncate(cmd.index+2);
-		gcs_send_text_fmt(PSTR("After truncate:%d"),mission.num_commands());
-
-		// Add the three virtual waypoints - The first VWP to be added is the farthest VWP
-
-		AP_Mission::Mission_Command vwp3 = {};
-		// Copy all the properties of the last mission waypoint
-		vwp3 = next_wp;
-		// Overwrite command id and waypoint coordinates
-		vwp3.id = MAV_CMD_NAV_WAYPOINT;
-		vwp3.content.location = loc_vwp3;
-		// Add the new command to the mission
-		mission.add_cmd(vwp3);
-
-		AP_Mission::Mission_Command vwp2 = {};
-		vwp2 = next_wp;
-		vwp2.id = MAV_CMD_NAV_WAYPOINT;
-		vwp2.content.location = loc_vwp2;
-		mission.add_cmd(vwp2);
-
-		AP_Mission::Mission_Command vwp1 = {};
-		vwp1 = next_wp;
-		vwp1.id = MAV_CMD_NAV_WAYPOINT;
-		vwp1.content.location = loc_vwp1;
-		mission.add_cmd(vwp1);
-
-		// For the moment the UAV will still land at the original landing waypoint
-		mission.add_cmd(wp);
-
-		gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
-		mission.update();
-		gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());      
+	    gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
+	    mission.update();
+	    gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());      
+	  
+	}
+	
+	Log_Write_VWP(100,wp.content.location.lat/10000000.0f,wp.content.location.lng/10000000.0f,wp.content.location.alt/100.0,1);
 	      
-	    }
-	    
 	++flag_cnt;
 
-	}
+	//} 	// WIND THRESHOLD DISABLED
+    } 
+    else {
+      
+          Log_Write_VWP(cmd.index,cmd.content.location.lat/10000000.0f,cmd.content.location.lng/10000000.0f,cmd.content.location.alt/100.0,0);
     }
 	
   

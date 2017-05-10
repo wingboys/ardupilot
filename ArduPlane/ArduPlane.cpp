@@ -314,27 +314,27 @@ void Plane::one_second_loop()
       vwp_status_printed = true;
   }
 
-/*    if(g.vwp_enabled)
-    {
-	one_sec_cnt += 1;
-
-	// After 60 seconds from the startup, the virtual waypoints will be added
-	if(one_sec_cnt > 60 && !mission_rewrote)
-	{
-	  gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
-	  one_time_rewrite();
-	  mission_rewrote = true;
-	}
-
-	// The following section is used for restoring the original mission
-	if(one_sec_cnt > 120 && !mission_restored)
-	{
-	  gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
-	  one_time_restore();
-	  mission_restored = true;
-	}
-	
-    } */ 
+//     if(g.vwp_enabled)
+//     {
+// 	one_sec_cnt += 1;
+// 
+// 	// After 60 seconds from the startup, the virtual waypoints will be added
+// 	if(one_sec_cnt > 60 && !mission_rewrote)
+// 	{
+// 	  gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
+// 	  one_time_rewrite();
+// 	  mission_rewrote = true;
+// 	}
+// 
+// 	// The following section is used for restoring the original mission
+// 	if(one_sec_cnt > 120 && !mission_restored)
+// 	{
+// 	  gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
+// 	  one_time_restore();
+// 	  mission_restored = true;
+// 	}
+// 	
+//     }  
   
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
@@ -423,6 +423,8 @@ void Plane::one_time_rewrite()
     loc_vwp1.alt = _lastMWP.content.location.alt;
     loc_vwp1.options = 1<<0;
     
+    Log_Write_VWP(99,loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0f,1);
+	    
     gcs_send_text_fmt(PSTR("VWP1:%10.6f,%10.6f,%8.3f"),(double)loc_vwp1.lat/10000000.0,(double)loc_vwp1.lng/10000000.0,(double)loc_vwp1.alt/100.0);
 
     loc_vwp2.lat = lwp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
@@ -432,11 +434,16 @@ void Plane::one_time_rewrite()
     loc_vwp2.options = 1<<0;			
     gcs_send_text_fmt(PSTR("VWP2:%10.6f,%10.6f,%8.3f"),(double)loc_vwp2.lat/10000000.0,(double)loc_vwp2.lng/10000000.0,(double)loc_vwp2.alt/100.0);
 
+    Log_Write_VWP(99,loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0f,1);
+	    
     loc_vwp3.lat = lwp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
     loc_vwp3.lng = lwp.lng + ((dist_vwp1+2.0*dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
     // The altitude is the same as the altitude of the last waypoint mission
     loc_vwp3.alt = _lastMWP.content.location.alt;
     loc_vwp3.options = 1<<0;
+    
+    Log_Write_VWP(99,loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0f,1);
+	    
     gcs_send_text_fmt(PSTR("VWP3:%10.6f,%10.6f,%8.3f"),(double)loc_vwp3.lat/10000000.0,(double)loc_vwp3.lng/10000000.0,(double)loc_vwp3.alt/100.0);
     
     gcs_send_text_fmt(PSTR("[%d] - REWRITE MISSION"),_flag_cnt);
@@ -473,6 +480,8 @@ void Plane::one_time_rewrite()
     // For the moment the UAV will still land at the original landing waypoint
     mission.add_cmd(_landWP);
     
+    Log_Write_VWP(100,_landWP.content.location.lat/10000000.0f,_landWP.content.location.lng/10000000.0f,_landWP.content.location.alt/100.0,1);
+    
     gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
     mission.update();
     gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());
@@ -484,7 +493,7 @@ void Plane::one_time_rewrite()
 void Plane::one_time_restore()
 {
   
-    gcs_send_text_fmt(PSTR("OneTimeRestorre-NumComm: %d"),mission.num_commands());
+    gcs_send_text_fmt(PSTR("OneTimeRestore-NumComm: %d"),mission.num_commands());
 
     // Here I restore the original version of the mission (in case it should be reloaded)
     gcs_send_text_fmt(PSTR("Restoring original mission"));

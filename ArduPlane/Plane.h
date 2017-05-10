@@ -979,6 +979,8 @@ private:
     void one_time_rewrite();
     void one_time_restore();
     
+    void Log_Write_VWP(int _mid, float _lat, float _lon, float _alt, int _isvwp);
+    
 public:
     void mavlink_delay_cb();
     void failsafe_check(void);

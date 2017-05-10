@@ -477,6 +477,32 @@ void Plane::Log_Write_Home_And_Origin()
     }
 }
 
+
+// precision landing logging
+struct PACKED log_VWP {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    int mid;
+    float lat;
+    float lon;
+    float alt;
+    int isvwp;
+};
+
+void Plane::Log_Write_VWP(int _mid, float _lat, float _lon, float _alt, int _isvwp)
+{
+    struct log_VWP pkt = {
+        LOG_PACKET_HEADER_INIT(LOG_VWP_MSG),
+        time_us	: hal.scheduler->micros64(),
+        mid	: _mid,
+	lat     : _lat,
+	lon     : _lon,
+        alt     : _alt,
+	isvwp   : _isvwp
+    };
+    DataFlash.WriteBlock(&pkt, sizeof(pkt));
+}
+
 static const struct LogStructure log_structure[] PROGMEM = {
     LOG_COMMON_STRUCTURES,
     { LOG_PERFORMANCE_MSG, sizeof(log_Performance), 
@@ -495,6 +521,7 @@ static const struct LogStructure log_structure[] PROGMEM = {
       "ATRP", "QBBcfff",  "TimeUS,Type,State,Servo,Demanded,Achieved,P" },
     { LOG_STATUS_MSG, sizeof(log_Status),
       "STAT", "QBfBBBB",  "TimeUS,isFlying,isFlyProb,Armed,Safety,Crash,Still" },
+    { LOG_VWP_MSG, sizeof(log_VWP), "VWP", "Qifffi", "TimeUS,idWP,lat,lon,alt,isVWP"},
 #if OPTFLOW == ENABLED
     { LOG_OPTFLOW_MSG, sizeof(log_Optflow),
       "OF",   "QBffff",   "TimeUS,Qual,flowX,flowY,bodyX,bodyY" },
