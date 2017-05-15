@@ -404,7 +404,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	float dist_incr = g.dist_incr;
 
 	// WindX is the component of the wind along North Axis. WindY is the component of the wind along East Axis.
-	thetaWind = atan2(windX,windY);
+	thetaWind = atan2(windY,windX);
 	// New theta is the wind direction + 90 degrees
 	new_theta_vwp = thetaWind + heading_wind*3.1415/180.0f;
 
@@ -419,7 +419,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	loc_vwp1.alt = next_wp.content.location.alt;
 	loc_vwp1.options = 1<<0;
 	
-	Log_Write_VWP(99,loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0f,1);
+	Log_Write_VWP(97,loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0f,1);
 	gcs_send_text_fmt(PSTR("VWP1:%10.6f,%10.6f,%8.3f"),loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0);
 
 	loc_vwp2.lat = lwp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
@@ -428,7 +428,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	loc_vwp2.alt = next_wp.content.location.alt;
 	loc_vwp2.options = 1<<0;
 	
-	Log_Write_VWP(99,loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0f,1);
+	Log_Write_VWP(98,loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0f,1);
 	gcs_send_text_fmt(PSTR("VWP2:%10.6f,%10.6f,%8.3f"),loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0);
 	
 	loc_vwp3.lat = lwp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
