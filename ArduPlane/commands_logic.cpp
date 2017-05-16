@@ -477,9 +477,9 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	    // For the moment the UAV will still land at the original landing waypoint
 	    mission.add_cmd(wp);
 
-	    gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
-	    mission.update();
-	    gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());      
+	    // gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
+	    // mission.update();
+	    // gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());      
 	  
 	}
 	
@@ -546,7 +546,7 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
 		mission.add_cmd(wp);
 		gcs_send_text_fmt(PSTR("Number of commands after re-adding landing WP: %d"),mission.num_commands());
 		// I update the mission
-		mission.update();
+		// mission.update();
 	}
 	
     }
