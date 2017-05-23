@@ -310,6 +310,8 @@ void Plane::send_extended_status1(mavlink_channel_t chan)
         0, 0, 0, 0);
 }
 
+int cnt_msg = 0;
+
 void Plane::send_location_neitzke(mavlink_channel_t chan)
 {
 
@@ -342,6 +344,25 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 	 */
 	const Vector3f& curr_vel = inertial_nav.get_velocity();
 	
+	/**
+	if(cnt_msg < 20)
+	{
+	  cnt_msg++;
+	  if(cnt_msg < 5)
+	  {
+	    relay.on(0);
+	    postion_ok = true;
+	  }
+	  else
+	    postion_ok = false;
+	}
+	else
+	{
+	  cnt_msg = 0;
+	  postion_ok = false;
+	}
+	*/
+	  
 	mavlink_msg_local_position_neitzke_send(
 			chan,
 			fix_time_ms,
@@ -355,6 +376,10 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 			curr_vel.z, // Z speed cm/s (+ve up)
 			ahrs.yaw_sensor,
 			(int8_t)plane.flight_stage);
+	
+	/**
+	relay.off(0);
+	*/
 }
 
 void Plane::send_location(mavlink_channel_t chan)

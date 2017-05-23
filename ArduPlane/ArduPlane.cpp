@@ -92,7 +92,8 @@ const AP_Scheduler::Task Plane::scheduler_tasks[] PROGMEM = {
 };
 
 void Plane::setup() 
-{
+{ 
+    
     cliSerial = hal.console;
 
     // load the default values of variables listed in var_info[]
@@ -108,6 +109,7 @@ void Plane::setup()
 
     // initialise the main loop scheduler
     scheduler.init(&scheduler_tasks[0], ARRAY_SIZE(scheduler_tasks)); 
+    
 }
 
 void Plane::loop()
