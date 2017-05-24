@@ -365,6 +365,11 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 
     GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd.index,cmd.index,cmd.content.location.lat*TO_DEG_FORMAT,cmd.content.location.lng*TO_DEG_FORMAT,cmd.content.location.alt/100.0f);
     
+    if(cmd.id == MAV_CMD_DO_CHANGE_SPEED)
+    {
+	GCS_SEND_MSG("Reducing speed to %d\n",cmd.p1);
+    }
+    
     if(wp.id == MAV_CMD_NAV_LAND && !vwp_status.vwp_generated)
     {
 	//This flag is used to make sure I rewrite the last part of the mission only once.
@@ -417,8 +422,10 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	float new_theta_vwp = 0.0f;
 	
 	float heading_wind = g.heading_wind;
-	float dist_vwp1 = g.dist_vwp1;
-	float dist_incr = g.dist_incr;
+	float vwp_spd = g.vwp_spd;
+	float dist_vwpl_1 = g.dist_vwpl_1;
+	float dist_vwpl_2 = g.dist_vwp1_2 + dist_vwpl_1;
+	float dist_vwpl_3 = g.dist_vwp2_3 + dist_vwpl_2;
 
 	// WindX is the component of the wind along North Axis. WindY is the component of the wind along East Axis.
 	thetaWind = atan2(windY,windX);
@@ -434,8 +441,8 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	GCS_SEND_MSG("VWPS_DIRd:%f",new_theta_vwp*180.0/3.1415);
 
 	// Calculate the coordinates of the first virtual waypoint -----------------------
-	loc_vwp1.lat = land_wp.lat + (dist_vwp1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	loc_vwp1.lng = land_wp.lng + (dist_vwp1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	loc_vwp1.lat = land_wp.lat + (dist_vwpl_1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
+	loc_vwp1.lng = land_wp.lng + (dist_vwpl_1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
 	loc_vwp1.alt = last_mwp.content.location.alt;
 	loc_vwp1.options = 1<<0;
@@ -449,8 +456,8 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	// -------------------------------------------------------------------------------
 	
 	// Calculate the coordinates of the second virtual waypoint ----------------------
-	loc_vwp2.lat = land_wp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	loc_vwp2.lng = land_wp.lng + ((dist_vwp1+dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	loc_vwp2.lat = land_wp.lat + dist_vwpl_2*cos(new_theta_vwp) / mdlat * 10000000.0f;
+	loc_vwp2.lng = land_wp.lng + dist_vwpl_2*sin(new_theta_vwp) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
 	loc_vwp2.alt = last_mwp.content.location.alt;
 	loc_vwp2.options = 1<<0;
@@ -461,11 +468,19 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	float vwp2_alt = loc_vwp2.alt/100.0f;
 	Log_Write_VWP(vwp_cfg.first_vwp_idx++,vwp2_lat,vwp2_lng,vwp2_alt,1);
 	GCS_SEND_MSG("VWP2:%10.6f,%10.6f,%8.3f",vwp2_lat,vwp2_lng,vwp2_alt);
+	
+	AP_Mission::Change_Speed_Command vwp2_spd;
+	vwp2_spd.speed_type = 0;
+	// The target speed is set as 80% of the current speed
+	// float current_speed = ahrs.getLastGNDSpeed();
+	float reduced_speed = vwp_spd; //current_speed*80.0f/100.0f;
+	vwp2_spd.target_ms = reduced_speed;
+	vwp2_spd.throttle_pct = 80.0f;
 	// -------------------------------------------------------------------------------
 	
 	// Calculate the coordinates of the third virtual waypoint -----------------------
-	loc_vwp3.lat = land_wp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-	loc_vwp3.lng = land_wp.lng + ((dist_vwp1+2.0*dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
+	loc_vwp3.lat = land_wp.lat + dist_vwpl_3*cos(new_theta_vwp) / mdlat * 10000000.0f;
+	loc_vwp3.lng = land_wp.lng + dist_vwpl_3*sin(new_theta_vwp) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
 	loc_vwp3.alt = last_mwp.content.location.alt;
 	loc_vwp3.options = 1<<0;
@@ -504,6 +519,12 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	    vwp2.id = MAV_CMD_NAV_WAYPOINT;
 	    vwp2.content.location = loc_vwp2;
 	    mission.add_cmd(vwp2);
+	    
+	    AP_Mission::Mission_Command reduce_speed = {};
+	    reduce_speed.id = MAV_CMD_DO_CHANGE_SPEED;
+	    reduce_speed.content.speed = vwp2_spd;
+	    reduce_speed.p1 = uint16_t(vwp_spd);
+	    mission.add_cmd(reduce_speed);
 
 	    AP_Mission::Mission_Command vwp1 = {};
 	    vwp1 = last_mwp;

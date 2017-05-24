@@ -377,6 +377,7 @@ void Plane::one_second_loop()
 #endif
 }
 
+/**
 void Plane::one_time_rewrite()
 {
     
@@ -522,6 +523,8 @@ void Plane::one_time_restore()
 	mission.update();
     }
 }
+
+*/
 
 
 void Plane::log_perf_info()

@@ -711,13 +711,13 @@ private:
       // This flag is set to true when the mission is restored
       bool mission_restored;
     } vwp_status_t;
-    
+
     vwp_config_t vwp_cfg = {
       .dist_lwp_idx = 2,
       .first_vwp_idx = 100,
-      .num_vpw = 3
+      .num_vpw = 4
     };
-    
+
     vwp_status_t vwp_status = {
       .vwp_generated = false,
       .mission_rewrote = false,
@@ -1008,8 +1008,8 @@ private:
     void dataflash_periodic(void);
     uint16_t throttle_min(void) const;
     
-    void one_time_rewrite();
-    void one_time_restore();
+    // void one_time_rewrite();
+    // void one_time_restore();
     
     void Log_Write_VWP(int _mid, float _lat, float _lon, float _alt, int _isvwp);
     
