@@ -17,6 +17,10 @@
 #define GCS_SEND_MSG(f_, ...) gcs_send_text_fmt(MAV_SEVERITY_INFO,(f_),##__VA_ARGS__);
 #endif
 
+// This the maximum variation of altitude between two consecutive virtual waypoints (value expressed in meters)
+#define MAX_STEP 20.0f
+#define MAX_STEP_CM MAX_STEP*100.0f
+
 /********************************************************************************/
 // Command Event Handlers
 /********************************************************************************/
@@ -439,12 +443,37 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	
 	GCS_SEND_MSG("OLD L_WP:%10.6f,%10.6f,%8.3f",land_wp_lat,land_wp_lng,land_wp_alt);
 	GCS_SEND_MSG("VWPS_DIRd:%f",new_theta_vwp*180.0/3.1415);
+	
+	// --------------------------------------------------------------------------------
+	// Difference of altitude between the last mission waypoint and the landing waypoint
+	float altitude_diff = wp.content.location.alt - cmd.content.location.alt;
+	float step = 0.0f;
+
+	GCS_SEND_MSG("ALT DIFF, STEP:%f,%f",altitude_diff,step);
+
+	// Avoid division by zero
+	if(vwp_cfg.num_vpw-1 > 0)
+		step = altitude_diff / vwp_cfg.num_vpw-1;
+
+	// Sanity check: I make sure that the altitude of each virtual waypoint is within
+	// the specified range
+	if(step < -MAX_STEP_CM)
+	{
+		step = -MAX_STEP_CM;
+		GCS_SEND_MSG("STEP ALTITUDE SET TO MAX");
+	}
+	if(step > MAX_STEP_CM)
+	{
+		step = MAX_STEP_CM;
+		GCS_SEND_MSG("STEP ALTITUDE SET TO MAX");
+	}
+	// --------------------------------------------------------------------------------
 
 	// Calculate the coordinates of the first virtual waypoint -----------------------
 	loc_vwp1.lat = land_wp.lat + (dist_vwpl_1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
 	loc_vwp1.lng = land_wp.lng + (dist_vwpl_1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
-	loc_vwp1.alt = last_mwp.content.location.alt;
+	loc_vwp1.alt = last_mwp.content.location.alt + 3*step;
 	loc_vwp1.options = 1<<0;
 	
 	// Print and save info about vwp1
@@ -459,7 +488,7 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	loc_vwp2.lat = land_wp.lat + dist_vwpl_2*cos(new_theta_vwp) / mdlat * 10000000.0f;
 	loc_vwp2.lng = land_wp.lng + dist_vwpl_2*sin(new_theta_vwp) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
-	loc_vwp2.alt = last_mwp.content.location.alt;
+	loc_vwp2.alt = last_mwp.content.location.alt + 2*step;
 	loc_vwp2.options = 1<<0;
 	
 	// Print and save info about vwp2	
@@ -482,7 +511,7 @@ void Plane::generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd)
 	loc_vwp3.lat = land_wp.lat + dist_vwpl_3*cos(new_theta_vwp) / mdlat * 10000000.0f;
 	loc_vwp3.lng = land_wp.lng + dist_vwpl_3*sin(new_theta_vwp) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
-	loc_vwp3.alt = last_mwp.content.location.alt;
+	loc_vwp3.alt = last_mwp.content.location.alt  + step;
 	loc_vwp3.options = 1<<0;
 	
 	float vwp3_lat = loc_vwp3.lat*TO_DEG_FORMAT;
