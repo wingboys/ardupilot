@@ -694,35 +694,53 @@ private:
     // indicate whether the arm has tilt to fwd flight
     bool tilt_to_fwd = false;
     
-    typedef struct {
-      // The following variable set the point in the mission where the virtual waypoints are generated
-      int16_t dist_lwp_idx;
-      // Index for the first virtual waypoint (this is used for logging)
-      int16_t first_vwp_idx;
-      // Number of virtual waypoints
-      int16_t num_vpw;
-    } vwp_config_t;
+    // -------------------------------------------------------------------------------
+    // BEGIN of virtual waypoint section
 
-    typedef struct {
-      // The following variable checks if the virtual waypoints have been generated
-      bool vwp_generated;
-      // This flag is set to true when the mission is modified
-      bool mission_rewrote;
-      // This flag is set to true when the mission is restored
-      bool mission_restored;
+    // Index of the item after which calculate the virtual waypoints
+    int16_t vwp_cmd_idx;
+
+    int16_t idx_last_mission_wp;
+    int16_t idx_landing_wp;
+
+    typedef enum vwp_generation_states {
+	VWP_NOT_GENERATED = 0,
+	VWP_GENERATED,
+	VWP_REMOVED
     } vwp_status_t;
 
-    vwp_config_t vwp_cfg = {
-      .dist_lwp_idx = 2,
-      .first_vwp_idx = 100,
-      .num_vpw = 4
-    };
+    typedef enum vwp_error_states {
+	VWP_NO_ERROR = 0,
+	VWP_LANDING_WP_NOT_FOUND,
+	VWP_LAST_MISSION_WP_NOT_FOUND,
+	VWP_INDEX_NOT_FOUND
+    } vwp_error_status_t;
 
-    vwp_status_t vwp_status = {
-      .vwp_generated = false,
-      .mission_rewrote = false,
-      .mission_restored = false
+    typedef struct {
+	// The following variable set the point in the mission where the virtual waypoints are generated
+	int16_t dist_lwp_idx;
+	// Number of virtual waypoints
+	int16_t num_vwp;
+    } vwp_config_t;
+
+    // Virtual waypoint functions
+    void init_VWP(void);
+    void calc_index_landing_waypoint(void);
+    void calc_index_last_mission_waypoint(void);
+    void calc_index_virtual_waypoints();
+    void generate_virtual_waypoints(const AP_Mission::Mission_Command& cmd);
+    void restore_mission();
+
+    vwp_status_t vwp_status = VWP_NOT_GENERATED;
+    vwp_error_status_t vwp_error = VWP_NO_ERROR;
+
+    vwp_config_t vwp_cfg = {
+	.dist_lwp_idx = 2,
+	.num_vwp = 4
     };
+    
+    // -------------------------------------------------------------------------------
+    // END of virtual waypoint section   
 
     void demo_servos(uint8_t i);
     void adjust_nav_pitch_throttle(void);
@@ -977,9 +995,7 @@ private:
     bool start_command(const AP_Mission::Mission_Command& cmd);
     bool verify_command(const AP_Mission::Mission_Command& cmd);
     void do_takeoff(const AP_Mission::Mission_Command& cmd);
-    void generateVirtualWaypoints(const AP_Mission::Mission_Command& cmd);
     void do_nav_wp(const AP_Mission::Mission_Command& cmd);
-    void restoreMission();
     void do_land(const AP_Mission::Mission_Command& cmd);
     void loiter_set_direction_wp(const AP_Mission::Mission_Command& cmd);
     void do_loiter_unlimited(const AP_Mission::Mission_Command& cmd);
