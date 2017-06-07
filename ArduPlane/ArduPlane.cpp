@@ -35,7 +35,6 @@ int one_sec_cnt = 0;
 int _flag_cnt = 0;
 bool mission_rewrote = false;
 bool mission_restored = false;
-
 bool vwp_status_printed = false;
 
 /*
@@ -307,36 +306,37 @@ void Plane::update_aux(void)
 void Plane::one_second_loop()
 {
   
-  if(!vwp_status_printed)
-  {
-      if(g.vwp_enabled==0)
-	gcs_send_text_fmt(PSTR("VWP disabled"));
-      else
-	gcs_send_text_fmt(PSTR("VWP enabled"));  
-      vwp_status_printed = true;
-  }
+    if(!vwp_status_printed)
+    {
+      
+	if(virtual_wp.is_vwp_enabled())
+	    GCS_SEND_MSG("VWP enabled");
+	else
+	    GCS_SEND_MSG("VWP disabled");
 
-//     if(g.vwp_enabled)
-//     {
-// 	one_sec_cnt += 1;
-// 
-// 	// After 60 seconds from the startup, the virtual waypoints will be added
-// 	if(one_sec_cnt > 60 && !mission_rewrote)
-// 	{
-// 	  gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
-// 	  one_time_rewrite();
-// 	  mission_rewrote = true;
-// 	}
-// 
-// 	// The following section is used for restoring the original mission
-// 	if(one_sec_cnt > 120 && !mission_restored)
-// 	{
-// 	  gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
-// 	  one_time_restore();
-// 	  mission_restored = true;
-// 	}
-// 	
-//     }  
+	vwp_status_printed = true;
+    }
+/**   
+    if(virtual_wp.is_vwp_enabled())
+    {
+	one_sec_cnt += 1;
+	// After 60 seconds from the startup, the virtual waypoints will be added
+	if(one_sec_cnt > 60 && !mission_rewrote)
+	{
+	    gcs_send_text_fmt(PSTR("Calling Mission Rewrite function"));
+	    one_time_rewrite();
+	    mission_rewrote = true;
+	}
+	
+	// The following section is used for restoring the original mission
+	if(one_sec_cnt > 120 && !mission_restored)
+	{
+	    gcs_send_text_fmt(PSTR("Calling Mission Restore function"));
+	    one_time_restore();
+	    mission_restored = true;
+	}
+    } 
+*/
   
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
@@ -380,152 +380,54 @@ void Plane::one_second_loop()
 /**
 void Plane::one_time_rewrite()
 {
-    
-    gcs_send_text_fmt(PSTR("APMF - Number of commands: %d"),mission.num_commands());
-    
-    AP_Mission::Mission_Command _lastMWP;    
-    AP_Mission::Mission_Command _landWP;
-    
-    gcs_send_text_fmt(PSTR("Current nav index: %d"),mission.get_current_nav_index());
-    
-    // The landing waypoint should be the last command.
-    uint16_t _landWP_idx = mission.num_commands() - 1;
-    uint16_t _lastMWP_idx = mission.num_commands() - 2;
-    
-    gcs_send_text_fmt(PSTR("LWP IDX: %d"),mission.get_current_nav_index());  
-    
-    mission.get_next_nav_cmd(_lastMWP_idx, _lastMWP); 
-    mission.get_next_nav_cmd(_landWP_idx, _landWP);
-    
-    gcs_send_text_fmt(PSTR("LAST M_WP:%10.6f,%10.6f,%8.3f"),(double)_lastMWP.content.location.lat/10000000.0,(double)_lastMWP.content.location.lng/10000000.0,(double)_lastMWP.content.location.alt/100.0);
+    // ========================================================================================
+    // Initialize the virtual waypoint procedure
+    virtual_wp.init_VWP();
 
-    // Conversion of latitude and logitude from degrees to meters (The reference WP for the conversion is the landing WP)
-    // More information at: https://knowledge.safe.com/articles/725/calculating-accurate-length-in-meters-for-lat-long.html
-    float latr = (_lastMWP.content.location.lat/10000000.0f)*3.1415/180.0;
-    float lngr = (_lastMWP.content.location.lng/10000000.0f)*3.1415/180.0;
+    GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
+    GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
+    GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
+    GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
 
-    float mdlat = 111132.954-559.822*cos(2*latr)+1.175*cos(4*latr);
-    float mdlng = 111132.954*cos(latr);
+    // Currently, if the index calculation fails, we do nothing.
+    // We could think about aborting the mission in some particular circumstances.
+    if(virtual_wp.vwp_error == VWP_NO_ERROR)
+    {
+    	GCS_SEND_MSG("Index calculated correctly.");
+    }
+    else
+    {
+    	GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
+    }
+    // ========================================================================================  
     
-    gcs_send_text_fmt(PSTR("LLr:%12.4f,%12.4f"),latr,lngr);
-    gcs_send_text_fmt(PSTR("LLm:%12.4f,%12.4f"),mdlat,mdlng);
+    virtual_wp.generate_virtual_waypoints(); // cmd);
 
-    // Coordinates of the virtual waypoints
-    Location loc_vwp1, loc_vwp2, loc_vwp3;
-    Location lwp = _landWP.content.location;
+    if(virtual_wp.vwp_status == VWP_GENERATED)
+    {
+        GCS_SEND_MSG("Virtual WP generated");
+        GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
+    }
     
-    // float heading_wind = g.heading_wind;
-    float new_theta_vwp = g.heading_wind;
-    float dist_vwp1 = g.dist_vwp1;
-    float dist_incr = g.dist_incr;
-    
-    // Calculate the coordinates of the three virtual waypoints
-    loc_vwp1.lat = lwp.lat + (dist_vwp1*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-    loc_vwp1.lng = lwp.lng + (dist_vwp1*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-    // The altitude is the same as the altitude of the last waypoint mission
-    loc_vwp1.alt = _lastMWP.content.location.alt;
-    loc_vwp1.options = 1<<0;
-    
-    Log_Write_VWP(99,loc_vwp1.lat/10000000.0f,loc_vwp1.lng/10000000.0f,loc_vwp1.alt/100.0f,1);
-	    
-    gcs_send_text_fmt(PSTR("VWP1:%10.6f,%10.6f,%8.3f"),(double)loc_vwp1.lat/10000000.0,(double)loc_vwp1.lng/10000000.0,(double)loc_vwp1.alt/100.0);
-
-    loc_vwp2.lat = lwp.lat + ((dist_vwp1+dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-    loc_vwp2.lng = lwp.lng + ((dist_vwp1+dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-    // The altitude is the same as the altitude of the last waypoint mission
-    loc_vwp2.alt = _lastMWP.content.location.alt;
-    loc_vwp2.options = 1<<0;			
-    gcs_send_text_fmt(PSTR("VWP2:%10.6f,%10.6f,%8.3f"),(double)loc_vwp2.lat/10000000.0,(double)loc_vwp2.lng/10000000.0,(double)loc_vwp2.alt/100.0);
-
-    Log_Write_VWP(99,loc_vwp2.lat/10000000.0f,loc_vwp2.lng/10000000.0f,loc_vwp2.alt/100.0f,1);
-	    
-    loc_vwp3.lat = lwp.lat + ((dist_vwp1+2.0*dist_incr)*cos(new_theta_vwp)) / mdlat * 10000000.0f;
-    loc_vwp3.lng = lwp.lng + ((dist_vwp1+2.0*dist_incr)*sin(new_theta_vwp)) / mdlng * 10000000.0f;
-    // The altitude is the same as the altitude of the last waypoint mission
-    loc_vwp3.alt = _lastMWP.content.location.alt;
-    loc_vwp3.options = 1<<0;
-    
-    Log_Write_VWP(99,loc_vwp3.lat/10000000.0f,loc_vwp3.lng/10000000.0f,loc_vwp3.alt/100.0f,1);
-	    
-    gcs_send_text_fmt(PSTR("VWP3:%10.6f,%10.6f,%8.3f"),(double)loc_vwp3.lat/10000000.0,(double)loc_vwp3.lng/10000000.0,(double)loc_vwp3.alt/100.0);
-    
-    gcs_send_text_fmt(PSTR("[%d] - REWRITE MISSION"),_flag_cnt);
-    
-    // Remove the old landing waypoint
-    gcs_send_text_fmt(PSTR("OLD L_WP IDX:%d"),_lastMWP.index);
-    gcs_send_text_fmt(PSTR("Before truncate:%d"),mission.num_commands());
-    mission.truncate(_landWP_idx);
-    gcs_send_text_fmt(PSTR("After truncate:%d"),mission.num_commands());
-
-    // Add the three virtual waypoints - The first VWP to be added is the farthest VWP
-
-    AP_Mission::Mission_Command vwp3 = {};
-    // Copy all the properties of the last mission waypoint
-    vwp3 = _lastMWP;
-    // Overwrite command id and waypoint coordinates
-    vwp3.id = MAV_CMD_NAV_WAYPOINT;
-    vwp3.content.location = loc_vwp3;
-    // Add the new command to the mission
-    mission.add_cmd(vwp3);
-
-    AP_Mission::Mission_Command vwp2 = {};
-    vwp2 = _lastMWP;
-    vwp2.id = MAV_CMD_NAV_WAYPOINT;
-    vwp2.content.location = loc_vwp2;
-    mission.add_cmd(vwp2);
-
-    AP_Mission::Mission_Command vwp1 = {};
-    vwp1 = _lastMWP;
-    vwp1.id = MAV_CMD_NAV_WAYPOINT;
-    vwp1.content.location = loc_vwp1;
-    mission.add_cmd(vwp1);
-
-    // For the moment the UAV will still land at the original landing waypoint
-    mission.add_cmd(_landWP);
-    
-    Log_Write_VWP(100,_landWP.content.location.lat/10000000.0f,_landWP.content.location.lng/10000000.0f,_landWP.content.location.alt/100.0,1);
-    
-    gcs_send_text_fmt(PSTR("Before Update:%d"),mission.num_commands());
-    mission.update();
-    gcs_send_text_fmt(PSTR("After Update:%d"),mission.num_commands());
-    
-    _flag_cnt += 1;
-	
+    // ======================================================================================== 
+  
 }
 
 void Plane::one_time_restore()
 {
-  
-    gcs_send_text_fmt(PSTR("OneTimeRestore-NumComm: %d"),mission.num_commands());
-
-    // Here I restore the original version of the mission (in case it should be reloaded)
-    gcs_send_text_fmt(PSTR("Restoring original mission"));
-    AP_Mission::Mission_Command wp;
-    uint16_t num_commands = mission.num_commands();
-    gcs_send_text_fmt(PSTR("Number of commands: %d"),num_commands);
-    mission.get_next_nav_cmd(num_commands-1, wp);
-    uint16_t landing_wp_index = wp.index;
-    gcs_send_text_fmt(PSTR("L_WP index: %d"),landing_wp_index);
-
-    // If the last command is the landing
-    if(wp.id==MAV_CMD_NAV_LAND)
+    // ========================================================================================
+    // After issuing the landing cmd the mission is restored to its original state
+    virtual_wp.restore_mission();
+    if(virtual_wp.vwp_status == VWP_REMOVED)
     {
-	// I remove the three previous commands (virtual waypoints)
-	uint16_t start = num_commands-4;
-	gcs_send_text_fmt(PSTR("Truncate mission at index: %d"),start);
-	mission.truncate(start);
-	gcs_send_text_fmt(PSTR("Num comm after truncate: %d"),mission.num_commands());
-	gcs_send_text_fmt(PSTR("Re-adding landing WP"));
-	// then, I re-add the landing waypoint
-	mission.add_cmd(wp);
-	gcs_send_text_fmt(PSTR("Num comm after re-adding L_WP: %d"),mission.num_commands());
-	// I update the mission
-	mission.update();
+        GCS_SEND_MSG("Original mission restored");
+        GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
     }
+    else
+        GCS_SEND_MSG("Error while restoring original mission");
+    // ======================================================================================== 
 }
-
 */
-
 
 void Plane::log_perf_info()
 {

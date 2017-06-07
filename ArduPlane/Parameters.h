@@ -51,6 +51,7 @@ public:
         k_param_format_version = 0,
         k_param_software_type,
         k_param_num_resets,
+	k_param_virtual_wp,
 
         // Misc
         //
@@ -332,13 +333,6 @@ public:
 
         // 254,255: reserved
     };
-    
-    AP_Int8  vwp_enabled;
-    AP_Float heading_wind;
-    AP_Float vwp_spd;
-    AP_Float dist_vwpl_1;
-    AP_Float dist_vwp1_2;
-    AP_Float dist_vwp2_3;
 
     AP_Int16 format_version;
     AP_Int8 software_type;
