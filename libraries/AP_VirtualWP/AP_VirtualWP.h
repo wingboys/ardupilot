@@ -83,7 +83,6 @@ public:
     /// is_current_cmd_vwp - returns true if the currennt command is a generated command (virtual waypoint)
     bool is_current_cmd_vwp(const AP_Mission::Mission_Command& cmd);
     
-    /// restore_mission - restores the mission to its initial state.
     void restore_mission();
     
     // Get methods
@@ -115,9 +114,10 @@ protected:
 private:
 
     typedef struct {
-      // The following variable set the point in the mission where the virtual waypoints are generated
+      // The following variable set the point in the mission where the virtual waypoints are generated.
+      // The point in the mission is calculated as the number of nav_commands from the landing waypoint.
       int16_t dist_lwp_idx;
-      // Number of virtual waypoints
+      // Number of virtual waypoints to be generated. For the moment it will be fixed at 3.
       int16_t num_vwp;
     } vwp_config_t;
 

@@ -94,15 +94,14 @@ void VirtualWP::init_VWP(void)
 void VirtualWP::calc_index_landing_waypoint(void)
 {
 
-// Command item used for iterating through the mission
-AP_Mission::Mission_Command current_cmd;
+    // Command item used for iterating through the mission
+    AP_Mission::Mission_Command current_cmd;
 
     // Start iterating from the end of the mission
     for(int16_t i=num_cmd-1; i>=0; i--)
     {
 	_mission.get_next_nav_cmd(i, current_cmd);
 
-	// If the current command is a NAV command
 	if(current_cmd.id == MAV_CMD_NAV_LAND)
 	{
 	    idx_landing_wp = current_cmd.index;
@@ -130,7 +129,6 @@ void VirtualWP::calc_index_last_mission_waypoint(void)
     {
 	_mission.get_next_nav_cmd(i, current_cmd);
 
-	// If the current command is a NAV command
 	if(current_cmd.id == MAV_CMD_NAV_WAYPOINT)
 	{
 	    idx_last_mission_wp = current_cmd.index;
@@ -161,7 +159,6 @@ void VirtualWP::calc_index_virtual_waypoints()
     {
 	_mission.get_next_nav_cmd(i, current_cmd);
 
-	// If the current command is a NAV command
 	if(current_cmd.id == MAV_CMD_NAV_WAYPOINT)
 	    ++curr_num_nav_cmd_idx;
 
@@ -192,7 +189,7 @@ bool VirtualWP::is_change_speed_cmd_issued(const AP_Mission::Mission_Command& cm
 void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cmd)
 {
 
-    // Check if the current cmd is where I should generate the virtual waypoints
+    // Check if the current cmd is where I should generate the virtual waypoints and there are no errors
     if(cmd.index == idx_vwp && vwp_error == VWP_NO_ERROR)
     {
 	//GCS_SEND_MSG("Generating VWP: %d",cmd.index);
@@ -389,7 +386,6 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	    _mission.add_cmd(wp);
 	}
 
-	// I set the state to VWP_GENERATED
 	vwp_status = VWP_GENERATED;
 
 	update_num_commands();
