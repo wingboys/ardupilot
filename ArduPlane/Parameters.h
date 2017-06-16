@@ -51,7 +51,6 @@ public:
         k_param_format_version = 0,
         k_param_software_type,
         k_param_num_resets,
-	k_param_virtual_wp,
 
         // Misc
         //
@@ -145,6 +144,7 @@ public:
 
         // 97: RSSI
         k_param_rssi = 97,
+	k_param_virtual_wp,
         
         // 100: Arming parameters
         k_param_arming = 100,

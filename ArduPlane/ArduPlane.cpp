@@ -316,7 +316,7 @@ void Plane::one_second_loop()
 
 	vwp_status_printed = true;
     }
-/**   
+/**    
     if(virtual_wp.is_vwp_enabled())
     {
 	one_sec_cnt += 1;
@@ -335,9 +335,8 @@ void Plane::one_second_loop()
 	    one_time_restore();
 	    mission_restored = true;
 	}
-    } 
-*/
-  
+    }
+*/  
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
 
@@ -388,7 +387,11 @@ void Plane::one_time_rewrite()
     GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
     GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
     GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
-
+    
+    GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
+    GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
+    GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
+    
     // Currently, if the index calculation fails, we do nothing.
     // We could think about aborting the mission in some particular circumstances.
     if(virtual_wp.vwp_error == VWP_NO_ERROR)
@@ -401,7 +404,10 @@ void Plane::one_time_rewrite()
     }
     // ========================================================================================  
     
-    virtual_wp.generate_virtual_waypoints(); // cmd);
+    AP_Mission::Mission_Command fake_cmd;
+    fake_cmd.index = virtual_wp.get_idx_vwp();
+    
+    virtual_wp.generate_virtual_waypoints(fake_cmd);
 
     if(virtual_wp.vwp_status == VWP_GENERATED)
     {

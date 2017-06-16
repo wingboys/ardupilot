@@ -320,11 +320,15 @@ void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
     // ========================================================================================
     // Initialize the virtual waypoint procedure
     virtual_wp.init_VWP();
-
+    
     GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
     GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
     GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
     GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
+    
+    GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
+    GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
+    GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
 
     // Currently, if the index calculation fails, we do nothing.
     // We could think about aborting the mission in some particular circumstances.
