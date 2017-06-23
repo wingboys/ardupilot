@@ -316,7 +316,8 @@ void Plane::one_second_loop()
 
 	vwp_status_printed = true;
     }
-/**    
+    
+    /**
     if(virtual_wp.is_vwp_enabled())
     {
 	one_sec_cnt += 1;
@@ -336,7 +337,8 @@ void Plane::one_second_loop()
 	    mission_restored = true;
 	}
     }
-*/  
+    */
+    
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
 

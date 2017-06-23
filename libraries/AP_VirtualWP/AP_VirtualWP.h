@@ -23,7 +23,7 @@
 #define MAX_STEP 20.0f
 #define MAX_STEP_CM MAX_STEP*100.0f
 
-#define MINIMUM_SPEED_DURING_VWP 20.0f
+#define MINIMUM_SPEED_DURING_VWP 10.0f
 
 // List of states concerning the generation of the virtual waypoints
 typedef enum vwp_generation_states {

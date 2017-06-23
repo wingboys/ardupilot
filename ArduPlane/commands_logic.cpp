@@ -385,7 +385,8 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     float cmd_alt = cmd.content.location.alt/100.0f;
     int16_t cmd_idx = cmd.index;
 
-    if(virtual_wp.is_current_cmd_vwp(cmd))
+    // if(virtual_wp.is_current_cmd_vwp(cmd))
+    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.index < virtual_wp.get_idx_landing_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
     {
     	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
     	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
@@ -403,6 +404,13 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
 {
     auto_state.commanded_go_around = false;
     set_next_WP(cmd.content.location);
+    
+    float lcmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
+    float lcmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
+    float lcmd_alt = cmd.content.location.alt/100.0f;
+    int16_t lcmd_idx = cmd.index;
+    
+    GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",lcmd_idx,lcmd_idx,lcmd_lat,lcmd_lng,lcmd_alt);
 
     // configure abort altitude and pitch
     // if NAV_LAND has an abort altitude then use it, else use last takeoff, else use 50m
