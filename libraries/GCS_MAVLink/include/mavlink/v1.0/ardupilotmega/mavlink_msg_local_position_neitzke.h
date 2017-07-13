@@ -4,17 +4,17 @@
 
 typedef struct __mavlink_local_position_neitzke_t
 {
- uint32_t time_boot_ms; /*< Timestamp (milliseconds since system boot)*/
- float x; /*< current x position relative to the home location in cm*/
- float y; /*< current y position relative to the home location in cm*/
- float z; /*< current z position relative to the home location in cm*/
- int32_t baro_alt; /*< Baro altitude above ground in meters, expressed in cm*/
- float vx; /*< Fused velocity in North direction in NEU frame in cm/s*/
- float vy; /*< Fused velocity in East direction in NEU frame in cm/s*/
- float vz; /*< Fused velocity in Up direction in NEU frame in cm/s*/
- uint16_t hdg; /*< Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX*/
- uint8_t position_ok; /*< boolean indicate if we have a good absolute position*/
- int8_t flight_stage; /*< stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)*/
+ uint32_t time_boot_ms; ///< Timestamp (milliseconds since system boot)
+ float x; ///< current x position relative to the home location in cm
+ float y; ///< current y position relative to the home location in cm
+ float z; ///< current z position relative to the home location in cm
+ int32_t baro_alt; ///< Baro altitude above ground in meters, expressed in cm
+ float vx; ///< Fused velocity in North direction in NEU frame in cm/s
+ float vy; ///< Fused velocity in East direction in NEU frame in cm/s
+ float vz; ///< Fused velocity in Up direction in NEU frame in cm/s
+ uint16_t hdg; ///< Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX
+ uint8_t position_ok; ///< boolean indicate if we have a good absolute position
+ int8_t flight_stage; ///< stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)
 } mavlink_local_position_neitzke_t;
 
 #define MAVLINK_MSG_ID_LOCAL_POSITION_NEITZKE_LEN 36

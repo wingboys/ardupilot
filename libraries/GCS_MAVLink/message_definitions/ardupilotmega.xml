@@ -961,6 +961,17 @@
 	    <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
 	    <field type="int8_t" name="flight_stage">stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)</field>
     </message>
+    
+    <message name="GDPILOT_STATUS_REQUEST" id="234">
+      <description>Request the status of a specific item/module of GDPilot, prior to arming the UAV</description>
+      <field name="module_id" type="uint8_t">Module ID</field>
+    </message>
+    
+    <message name="GDPILOT_STATUS_RESPONSE" id="235">
+      <description>Response of a specific item/module of GDPilot.</description>
+      <field name="module_id" type="uint8_t">Module ID</field>
+      <field name="value" type="uint8_t">Status</field>
+    </message>    
 
      </messages>
 </mavlink>
