@@ -429,7 +429,7 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     {
       AP_Mission::Mission_Command log_cmd;
       
-      log_cmd = virtual_wp.get_vwp1();
+      log_cmd = virtual_wp.get_vwp3();
       float cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
       float cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
       float cmd_alt = log_cmd.content.location.alt/100.0f;
@@ -445,7 +445,7 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     
       GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
       
-      log_cmd = virtual_wp.get_vwp3();
+      log_cmd = virtual_wp.get_vwp1();
       cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
       cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
       cmd_alt = log_cmd.content.location.alt/100.0f;
