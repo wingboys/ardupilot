@@ -325,10 +325,6 @@ void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
     GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
     GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
     GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
-    
-    GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
-    GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
-    GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
 
     // Currently, if the index calculation fails, we do nothing.
     // We could think about aborting the mission in some particular circumstances.
@@ -377,7 +373,12 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     {
         GCS_SEND_MSG("Virtual WP generated");
         GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
+	
+	GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
+	GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
+	GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
     }
+    
     // -----------------------------------------------------------------------
     // Log information on the SD card
     float cmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
@@ -404,13 +405,6 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
 {
     auto_state.commanded_go_around = false;
     set_next_WP(cmd.content.location);
-    
-    float lcmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
-    float lcmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
-    float lcmd_alt = cmd.content.location.alt/100.0f;
-    int16_t lcmd_idx = cmd.index;
-    
-    GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",lcmd_idx,lcmd_idx,lcmd_lat,lcmd_lng,lcmd_alt);
 
     // configure abort altitude and pitch
     // if NAV_LAND has an abort altitude then use it, else use last takeoff, else use 50m
@@ -429,6 +423,44 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     // zero rangefinder state, start to accumulate good samples now
     memset(&rangefinder_state, 0, sizeof(rangefinder_state));
 #endif
+    
+    // If the virtual waypoint feature is disables, I log them anyway (for debugging)
+    if(!virtual_wp.is_vwp_enabled())
+    {
+      AP_Mission::Mission_Command log_cmd;
+      
+      log_cmd = virtual_wp.get_vwp1();
+      float cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
+      float cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
+      float cmd_alt = log_cmd.content.location.alt/100.0f;
+      int16_t cmd_idx = log_cmd.index;
+    
+      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+      
+      log_cmd = virtual_wp.get_vwp2();
+      cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
+      cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
+      cmd_alt = log_cmd.content.location.alt/100.0f;
+      cmd_idx = log_cmd.index;
+    
+      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+      
+      log_cmd = virtual_wp.get_vwp3();
+      cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
+      cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
+      cmd_alt = log_cmd.content.location.alt/100.0f;
+      cmd_idx = log_cmd.index;
+    
+      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);      
+      
+    }
+    
+    float lcmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
+    float lcmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
+    float lcmd_alt = cmd.content.location.alt/100.0f;
+    int16_t lcmd_idx = cmd.index;
+    
+    GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",lcmd_idx,lcmd_idx,lcmd_lat,lcmd_lng,lcmd_alt);
     
     // ========================================================================================
     // After issuing the landing cmd the mission is restored to its original state
