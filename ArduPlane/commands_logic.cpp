@@ -2,6 +2,8 @@
 
 #include "Plane.h"
 
+bool message_visualized = false;
+
 /********************************************************************************/
 // Command Event Handlers
 /********************************************************************************/
@@ -369,7 +371,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     // Check if it's time to generate the virtual waypoints
     virtual_wp.generate_virtual_waypoints(cmd);
 
-    if(virtual_wp.vwp_status == VWP_GENERATED)
+    if(virtual_wp.vwp_status == VWP_GENERATED && !message_visualized)
     {
         GCS_SEND_MSG("Virtual WP generated");
         GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
@@ -377,6 +379,10 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 	GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
 	GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
 	GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
+	
+	GCS_SEND_MSG("IDX LMWP: %F",virtual_wp.get_idx_last_mission_wp());
+	
+	message_visualized = true;
     }
     
     // -----------------------------------------------------------------------
@@ -387,7 +393,7 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     int16_t cmd_idx = cmd.index;
 
     // if(virtual_wp.is_current_cmd_vwp(cmd))
-    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.index < virtual_wp.get_idx_landing_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
+    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
     {
     	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
     	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
