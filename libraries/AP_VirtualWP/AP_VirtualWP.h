@@ -103,10 +103,10 @@ public:
     void 	set_dist_vwp1_2(AP_Float _val)	{ dist_vwp1_2 = _val; }
     void 	set_dist_vwp2_3(AP_Float _val)	{ dist_vwp2_3 = _val; }
     
-    AP_Mission::Mission_Command& get_vwp1() { return vwp1; }    
-    AP_Mission::Mission_Command& get_vwp2() { return vwp1; }    
-    AP_Mission::Mission_Command& get_vwp3() { return vwp1; }    
-    AP_Mission::Mission_Command& get_reduce_speed() { return reduce_speed; }
+    AP_Mission::Mission_Command get_vwp1() { return vwp1; }    
+    AP_Mission::Mission_Command get_vwp2() { return vwp2; }    
+    AP_Mission::Mission_Command get_vwp3() { return vwp3; }    
+    AP_Mission::Mission_Command get_reduce_speed() { return reduce_speed; }
 
     // Status variables
     vwp_status_t vwp_status;

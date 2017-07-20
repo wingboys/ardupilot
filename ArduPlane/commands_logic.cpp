@@ -476,8 +476,6 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
         GCS_SEND_MSG("Original mission restored");
         GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
     }
-    else
-        GCS_SEND_MSG("Error while restoring original mission");
     // ========================================================================================
     
 }
