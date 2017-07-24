@@ -37,6 +37,7 @@ bool Plane::verify_land()
         if (adjusted_relative_altitude_cm() > auto_state.takeoff_altitude_rel_cm) {
             next_WP_loc = current_loc;
             mission.stop();
+	    gcs_send_text_P(MAV_SEVERITY_ALERT, PSTR("AB2 - inside verify land"));
             bool success = restart_landing_sequence();
             mission.resume();
             if (!success) {

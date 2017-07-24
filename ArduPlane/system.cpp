@@ -498,6 +498,9 @@ void Plane::exit_mode(enum FlightMode mode)
 
             if (mission.get_current_nav_cmd().id == MAV_CMD_NAV_LAND)
             {
+	        gcs_send_text_P(MAV_SEVERITY_ALERT, PSTR("AB1 - current cmd is land"));
+		// if I go inside this check, it means that I leave the AUTO MODE and I should disable
+		// the restart_landing_sequence
                 restart_landing_sequence();
             }
         }
