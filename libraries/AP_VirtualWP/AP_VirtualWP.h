@@ -145,7 +145,8 @@ private:
 
     // Number of commands contained in the mission
     int16_t num_cmd;
-    
+        
+    // vwp1 is the closest wp to the landing wp, vwp3 is the farthest
     AP_Mission::Mission_Command vwp1;  
     AP_Mission::Mission_Command vwp2;
     AP_Mission::Mission_Command vwp3;
@@ -153,7 +154,7 @@ private:
 
     AP_Mission&		_mission;
     AP_AHRS_NavEKF&	_ahrs;
-
+    
 };
 
 
