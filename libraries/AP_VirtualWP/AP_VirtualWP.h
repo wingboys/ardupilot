@@ -24,6 +24,7 @@
 #define MAX_STEP_CM MAX_STEP*100.0f
 
 #define MINIMUM_SPEED_DURING_VWP 10.0f
+#include "../AP_Mission/AP_Mission.h"
 
 // List of states concerning the generation of the virtual waypoints
 typedef enum vwp_generation_states {
@@ -107,6 +108,7 @@ public:
     AP_Mission::Mission_Command get_vwp2() { return vwp2; }    
     AP_Mission::Mission_Command get_vwp3() { return vwp3; }    
     AP_Mission::Mission_Command get_reduce_speed() { return reduce_speed; }
+    AP_Mission::Mission_Command get_lta() { return lta; }
 
     // Status variables
     vwp_status_t vwp_status;
@@ -151,6 +153,7 @@ private:
     AP_Mission::Mission_Command vwp2;
     AP_Mission::Mission_Command vwp3;
     AP_Mission::Mission_Command reduce_speed;
+    AP_Mission::Mission_Command lta;
 
     AP_Mission&		_mission;
     AP_AHRS_NavEKF&	_ahrs;

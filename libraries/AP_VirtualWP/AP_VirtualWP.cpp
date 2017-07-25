@@ -94,6 +94,7 @@ void VirtualWP::init_VWP(void)
     vwp2 = {};
     vwp3 = {};
     reduce_speed = {};
+    lta = {};
     
 }
 
@@ -301,19 +302,24 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	loc_vwp3.lat = land_wp.content.location.lat + dist_vwpl_3*cos(new_theta_vwp) / mdlat * 10000000.0f;
 	loc_vwp3.lng = land_wp.content.location.lng + dist_vwpl_3*sin(new_theta_vwp) / mdlng * 10000000.0f;
 	// The altitude is the same as the altitude of the last waypoint mission
-	loc_vwp3.alt = land_wp.content.location.alt;
+	loc_vwp3.alt = last_mwp.content.location.alt;
 	loc_vwp3.options = 1<<0;
 
 	vwp3 = last_mwp;
 	// Overwrite command id and waypoint coordinates
-	vwp3.id = MAV_CMD_NAV_LOITER_TO_ALT;
+	vwp3.id = MAV_CMD_NAV_WAYPOINT;
 	vwp3.content.location = loc_vwp3;
 	
+	lta = last_mwp;
+	lta.id = MAV_CMD_NAV_LOITER_TO_ALT;
+	lta.content.location.lat = loc_vwp3.lat;
+	lta.content.location.lng = loc_vwp3.lng;
+	lta.content.location.alt = land_wp.content.location.alt;	
 	// Heading aligned with the direction of the next virtual waypoint
 	// Radius of 30 meters. This should be set as additional parameter
 	uint8_t radius_m = 30;
 	uint8_t heading_req = 1;
-	vwp3.p1 = (((uint16_t)radius_m)<<8) | (uint16_t)heading_req;
+	lta.p1 = (((uint16_t)radius_m)<<8) | (uint16_t)heading_req;	
 	
 	vwp2 = last_mwp;
 	vwp2.id = MAV_CMD_NAV_WAYPOINT;
@@ -330,6 +336,7 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	{
 	    _mission.truncate(idx_landing_wp);
 	    _mission.add_cmd(vwp3);
+	    _mission.add_cmd(lta);
 	    _mission.add_cmd(vwp2);
 	    // _mission.add_cmd(reduce_speed);
 	    _mission.add_cmd(vwp1);
