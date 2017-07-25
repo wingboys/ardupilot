@@ -308,7 +308,12 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	// Overwrite command id and waypoint coordinates
 	vwp3.id = MAV_CMD_NAV_LOITER_TO_ALT;
 	vwp3.content.location = loc_vwp3;
-	// Add the new command to the mission
+	
+	// Heading aligned with the direction of the next virtual waypoint
+	// Radius of 30 meters. This should be set as additional parameter
+	uint8_t radius_m = 30;
+	uint8_t heading_req = 1;
+	vwp3.p1 = (((uint16_t)radius_m)<<8) | (uint16_t)heading_req;
 	
 	vwp2 = last_mwp;
 	vwp2.id = MAV_CMD_NAV_WAYPOINT;
