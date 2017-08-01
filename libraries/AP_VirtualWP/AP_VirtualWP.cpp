@@ -34,7 +34,7 @@ const AP_Param::GroupInfo VirtualWP::var_info[] = {
     // @Units: m/s
     // @Range: 15 30
     // @Increment: 1
-    AP_GROUPINFO("SPEED", 3, VirtualWP, vwp_spd, 20.0f),  
+    AP_GROUPINFO("SPEED", 3, VirtualWP, vwp_spd, 15.0f),  
   
     // @Param: DIST_VWP1
     // @DisplayName: Distance of VWP1 from landing WP
@@ -43,7 +43,7 @@ const AP_Param::GroupInfo VirtualWP::var_info[] = {
     // @Units: m
     // @Range: 20 500
     // @Increment: 1
-    AP_GROUPINFO("DIST_L_1", 4, VirtualWP, dist_vwpl_1, 50.0f),
+    AP_GROUPINFO("DIST_L_1", 4, VirtualWP, dist_vwpl_1, 80.0f),
 
     // @Param: DIST_INCR
     // @DisplayName: Distance of VWP2 from landing WP
