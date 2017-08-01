@@ -1687,6 +1687,16 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         if (handle_mission_item(msg, plane.mission)) {
             plane.DataFlash.Log_Write_EntireMission(plane.mission);
         }
+        
+        // I initialize the vwp when I've received the new mission and the UAV is not flying.
+        // TO DO: Verify if the checking if the UAV is flying or not is necessary.
+        // I don't want that this function is called when we modify the mission on flight.
+        if(is_new_mission_received())
+	{
+	    plane.init_vwp();
+	    disable_new_mission_flag();	    
+	}
+        
         break;
     }
 

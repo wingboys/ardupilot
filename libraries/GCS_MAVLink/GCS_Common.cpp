@@ -32,6 +32,8 @@ GCS_MAVLINK::GCS_MAVLINK() :
 {
     AP_Param::setup_object_defaults(this, var_info);
     neitzkePilot_detected = false;
+    
+    new_mission_received = false;
 }
 
 void
@@ -764,6 +766,9 @@ bool GCS_MAVLINK::handle_mission_item(mavlink_message_t *msg, AP_Mission &missio
 	}
         
         send_text_P(MAV_SEVERITY_WARNING,PSTR("flight plan received"));
+	
+	new_mission_received = true;	
+	
         waypoint_receiving = false;
         mission_is_complete = true;
         // XXX ignores waypoint radius for individual waypoints, can

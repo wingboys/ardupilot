@@ -154,6 +154,8 @@ public:
     Plane(void);
     void setup();
     void loop();
+    
+    void init_vwp();
 
 private:
     // key aircraft parameters passed to multiple libraries
@@ -759,6 +761,9 @@ private:
     void Log_Write_Home_And_Origin();
     void Log_Write_Vehicle_Startup_Messages();
     void Log_Read(uint16_t log_num, int16_t start_page, int16_t end_page);
+    
+    void log_waypoint(const AP_Mission::Mission_Command &cmd);
+    
     void start_logging();
 
     void load_parameters(void);

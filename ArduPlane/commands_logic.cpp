@@ -319,27 +319,6 @@ void Plane::do_RTL(void)
 void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
 {
 
-    // ========================================================================================
-    // Initialize the virtual waypoint procedure
-    virtual_wp.init_VWP();
-    
-    GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
-    GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
-    GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
-    GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
-
-    // Currently, if the index calculation fails, we do nothing.
-    // We could think about aborting the mission in some particular circumstances.
-    if(virtual_wp.vwp_error == VWP_NO_ERROR)
-    {
-    	GCS_SEND_MSG("Index calculated correctly.");
-    }
-    else
-    {
-    	GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
-    }
-    // ========================================================================================  
-
     prev_WP_loc = current_loc;
     set_next_WP(cmd.content.location);
     // pitch in deg, airspeed  m/s, throttle %, track WP 1 or 0
@@ -361,6 +340,29 @@ void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
     auto_state.baro_takeoff_alt = barometer.get_altitude();
 }
 
+void Plane::log_waypoint(const AP_Mission::Mission_Command& cmd)
+{ 
+
+    // Log information on the SD card
+    float cmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
+    float cmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
+    float cmd_alt = cmd.content.location.alt/100.0f;
+    int16_t cmd_idx = cmd.index;
+
+    // if(virtual_wp.is_current_cmd_vwp(cmd))
+    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
+    {
+	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
+    }
+    else
+    {
+	GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,0);
+    }
+  
+}
+
 void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 {
   
@@ -376,34 +378,11 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
         GCS_SEND_MSG("Virtual WP generated");
         GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
 	
-	GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
-	GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
-	GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
-	
-	GCS_SEND_MSG("IDX LMWP: %F",virtual_wp.get_idx_last_mission_wp());
-	
 	message_visualized = true;
     }
     
-    // -----------------------------------------------------------------------
-    // Log information on the SD card
-    float cmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
-    float cmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
-    float cmd_alt = cmd.content.location.alt/100.0f;
-    int16_t cmd_idx = cmd.index;
-
-    // if(virtual_wp.is_current_cmd_vwp(cmd))
-    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
-    {
-    	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-    	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
-    }
-    else
-    {
-    	GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,0);
-    }
-    // ========================================================================================
+    // This function will log both, normal and virtual waypoints
+    log_waypoint(cmd);
     
 }
 

@@ -147,6 +147,36 @@ void Plane::loop()
     scheduler.run(remaining);
 }
 
+void Plane::init_vwp()
+{
+  
+    if(!is_flying() && isFlyingProbability <= 0.1)
+    {
+        // ========================================================================================
+	// Initialize the virtual waypoint procedure
+	virtual_wp.init_VWP();
+
+	GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
+	GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
+	GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
+	GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
+
+	// Currently, if the index calculation fails, we do nothing.
+	// We could think about aborting the mission in some particular circumstances.
+	if(virtual_wp.vwp_error == VWP_NO_ERROR)
+	{
+	    GCS_SEND_MSG("Index calculated correctly.");
+	}
+	else
+	{
+	    GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
+	}
+      
+    }
+	    
+    // ======================================================================================== 
+}
+
 // update AHRS system
 void Plane::ahrs_update()
 {
