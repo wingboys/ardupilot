@@ -1693,7 +1693,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         // I don't want that this function is called when we modify the mission on flight.
         if(is_new_mission_received())
 	{
-	    plane.init_vwp();
+	    send_text_P(MAV_SEVERITY_WARNING,PSTR("NEW MISSION RECEIVED"));
+	    //plane.init_vwp();
 	    disable_new_mission_flag();	    
 	}
         

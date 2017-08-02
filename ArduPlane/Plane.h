@@ -158,6 +158,10 @@ public:
     void init_vwp();
 
 private:
+  
+    bool mission_usable;
+    bool vwp_feature_usable;
+    
     // key aircraft parameters passed to multiple libraries
     AP_Vehicle::FixedWing aparm;
     AP_HAL::BetterStream* cliSerial;

@@ -47,6 +47,10 @@ void AP_Mission::init()
     }
 
     _last_change_time_ms = hal.scheduler->millis();
+    
+    // Inspect the mission at startup is valid
+    inspect_stored_mission();
+
 }
 
 /// start - resets current commands to point to the beginning of the mission
@@ -356,6 +360,30 @@ bool AP_Mission::get_next_nav_cmd(uint16_t start_index, Mission_Command& cmd)
     // if we got this far we did not find a navigation command
     return false;
 }
+
+void AP_Mission::inspect_stored_mission()
+{
+  
+  Mission_Command cmd;
+  
+  uint16_t num_items = num_commands();
+  
+  for(uint16_t i = 0; i < num_items; i++)
+  {
+      get_next_nav_cmd(i, cmd);
+      
+      if(cmd.id == MAV_CMD_NAV_TAKEOFF)
+	found_takeoff_wp = true;
+      
+      if(cmd.id == MAV_CMD_NAV_LAND)
+	found_landing_wp = true;
+      
+      if(cmd.id == MAV_CMD_NAV_WAYPOINT)
+	num_nav_wayponts++;
+  }
+
+}
+
 
 /// get the ground course of the next navigation leg in centidegrees
 /// from 0 36000. Return default_angle if next navigation

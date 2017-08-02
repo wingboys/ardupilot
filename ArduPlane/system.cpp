@@ -314,9 +314,65 @@ void Plane::startup_ground(void)
     serial_manager.set_blocking_writes_all(false);
 
     ins.set_raw_logging(should_log(MASK_LOG_IMU_RAW));
-    ins.set_dataflash(&DataFlash);    
+    ins.set_dataflash(&DataFlash);   
+    
+    // Before notifying the USER if the UAv is ready to fly, I do one extra check about the mission stored in the eeprom.  
+    // Here I check if the mission contains the following required items:
+    // 1. Takeoff waypoint
+    // 2. Landing waypoint
+    // 3. At least one navigation waypoint
+    
+    mission_usable = true;
+    vwp_feature_usable = true;
+    
+    if(!mission.is_takeoff_wp_present())
+    {
+      mission_usable = false;
+      gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("TAKE OFF WP NOT PRESENT"));
+      // The delay is to prevent that not all the messages are visualized into the Message tab in the Mission planner
+      // Using the delay function should be fine since the UAV is still on the ground initializing the sensors.
+      hal.scheduler->delay(1000);
+    }
+    
+    if(!mission.is_landing_wp_present())
+    {
+      mission_usable = false;
+      gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("LANDING WP NOT PRESENT"));
+      hal.scheduler->delay(1000);
+    }
 
-    gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\n Ready to FLY."));
+    uint16_t num_nav_waypoint = mission.get_num_nav_wayponts();
+    
+    // We need to have at least one mission waypoint
+    if(num_nav_waypoint < 2)
+    {
+      mission_usable = false;
+     gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("NOT ENOUGH NAV WAYPOINTS"));
+      hal.scheduler->delay(1000);
+    } 
+        
+    if(virtual_wp.is_vwp_enabled())
+    {
+	if(num_nav_waypoint < virtual_wp.get_num_min_nav_waypoints())
+	{
+	    gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("NOT ENOUGH WP FOR THE VIRTUAL WP"));
+	    virtual_wp.disable();
+	    vwp_feature_usable = false;
+	    hal.scheduler->delay(1000);
+	}
+	else
+	    init_vwp();
+    }
+
+    if(mission_usable)
+    {
+      if(vwp_feature_usable)
+	  gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\nReady to FLY WITHOUT VWP"));
+      else
+	  gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\nReady to FLY WITH VWP"));
+    }
+    else
+      gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\nNot Ready to FLY."));
 }
 
 enum FlightMode Plane::get_previous_mode() {

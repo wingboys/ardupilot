@@ -76,7 +76,7 @@ VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs):
 	vwp_cfg{2,4}
 {}
 
-void VirtualWP::init_VWP(void)
+void VirtualWP::init(void)
 {
     num_cmd = _mission.num_commands();
     
@@ -94,6 +94,8 @@ void VirtualWP::init_VWP(void)
     vwp2 = {};
     vwp3 = {};
     reduce_speed = {};
+    
+    num_min_nav_waypoints = 3;
     
 }
 

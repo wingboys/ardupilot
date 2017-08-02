@@ -257,14 +257,30 @@ public:
         _flags.state = MISSION_STOPPED;
         _flags.nav_cmd_loaded = false;
         _flags.do_cmd_loaded = false;
+	
+	found_takeoff_wp = false;
+	found_landing_wp = false;
+	num_nav_wayponts = 0;
     }
-
+    
+    
+    bool found_takeoff_wp;
+    bool found_landing_wp;
+    uint16_t  num_nav_wayponts;
+    
+    bool is_takeoff_wp_present() { return found_takeoff_wp; }
+    bool is_landing_wp_present() { return found_landing_wp; }
+    uint16_t get_num_nav_wayponts() { return num_nav_wayponts; }
+  
     ///
     /// public mission methods
     ///
 
     /// init - initialises this library including checks the version in eeprom matches this library
     void init();
+    
+    // Inspect if a mission is loaded at startup. Returns true if we have a takeoff waypoint, a landing waypoint and at least one mission waypoint.
+    void inspect_stored_mission();
 
     /// status - returns the status of the mission (i.e. Mission_Started, Mission_Complete, Mission_Stopped
     mission_state state() const { return _flags.state; }

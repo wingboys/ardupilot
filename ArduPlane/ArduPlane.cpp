@@ -154,7 +154,7 @@ void Plane::init_vwp()
     {
         // ========================================================================================
 	// Initialize the virtual waypoint procedure
-	virtual_wp.init_VWP();
+	virtual_wp.init();
 
 	GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
 	GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
