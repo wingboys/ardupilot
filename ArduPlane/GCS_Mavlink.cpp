@@ -1792,6 +1792,13 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     case MAVLINK_MSG_ID_PARAM_SET:
     {
         handle_param_set(msg, &plane.DataFlash);
+	
+	if(is_vwp_setting_received())
+	{
+	   disable_vwp_setting_received();
+	   plane.check_mission();
+	}	
+	
         break;
     }
 

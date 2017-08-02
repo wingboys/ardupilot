@@ -106,9 +106,13 @@ public:
     
     // This variable is set when a new mission is received
     bool	new_mission_received;
+    bool	vwp_setting_received;
     
     bool	is_new_mission_received() { return new_mission_received; }
     void	disable_new_mission_flag() { new_mission_received = false; }
+    
+    bool	is_vwp_setting_received() { return vwp_setting_received; }
+    void	disable_vwp_setting_received() { vwp_setting_received = false; }
 
     // NOTE! The streams enum below and the
     // set of AP_Int16 stream rates _must_ be

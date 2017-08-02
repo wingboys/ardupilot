@@ -379,6 +379,8 @@ void Plane::check_mission()
     }
     else
       gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\nNot Ready to FLY."));
+    
+    // Here I should start waiting for messages from the GD Pilot assuring that everything is fine from his side.
   
 }
 

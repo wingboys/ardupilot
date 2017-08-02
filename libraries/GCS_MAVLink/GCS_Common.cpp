@@ -34,6 +34,7 @@ GCS_MAVLINK::GCS_MAVLINK() :
     neitzkePilot_detected = false;
     
     new_mission_received = false;
+    vwp_setting_received = false;
 }
 
 void
@@ -600,6 +601,18 @@ void GCS_MAVLINK::handle_param_set(mavlink_message_t *msg, DataFlash_Class *Data
     if (DataFlash != NULL) {
         DataFlash->Log_Write_Parameter(key, vp->cast_to_float(var_type));
     }
+    
+    // Here I check if the parameter received is about the virtual wp
+    // The key VWP_ENABLE is hardcoded on the VirtualWP class.
+    if(!strcmp(key,"VWP_ENABLE"))    
+    {
+        // I check if the value is greater than 0.5 to avoid using == between two float numbers
+	//if(packet.param_value > 0.5)	
+	vwp_setting_received = true;
+	//else
+	//  vwp_disable();	
+    }  
+    
 }
 
 
