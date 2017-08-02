@@ -767,6 +767,7 @@ bool GCS_MAVLINK::handle_mission_item(mavlink_message_t *msg, AP_Mission &missio
         
         send_text_P(MAV_SEVERITY_WARNING,PSTR("flight plan received"));
 	
+	// This variable is set anytime the user sends a new mission
 	new_mission_received = true;	
 	
         waypoint_receiving = false;

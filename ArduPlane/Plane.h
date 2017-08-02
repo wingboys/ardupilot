@@ -155,7 +155,9 @@ public:
     void setup();
     void loop();
     
+    // This is an interface for the accessing the virtual waypoint class from outside
     void init_vwp();
+    bool is_vwp_enabled() { return virtual_wp.is_vwp_enabled(); }
 
 private:
   
@@ -716,6 +718,7 @@ private:
     VirtualWP virtual_wp{mission,ahrs};
 #endif
 
+    void check_mission();
     void demo_servos(uint8_t i);
     void adjust_nav_pitch_throttle(void);
     void update_load_factor(void);

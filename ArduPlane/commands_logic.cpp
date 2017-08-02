@@ -355,6 +355,11 @@ void Plane::log_waypoint(const AP_Mission::Mission_Command& cmd)
 	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
 	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
     }
+    else if(cmd.id == MAV_CMD_NAV_LAND)
+    {
+	GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,2);
+    }
     else
     {
 	GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
@@ -410,43 +415,7 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     memset(&rangefinder_state, 0, sizeof(rangefinder_state));
 #endif
     
-    // If the virtual waypoint feature is disables, I log them anyway (for debugging)
-    if(!virtual_wp.is_vwp_enabled())
-    {
-      AP_Mission::Mission_Command log_cmd;
-      
-      log_cmd = virtual_wp.get_vwp3();
-      float cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
-      float cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
-      float cmd_alt = log_cmd.content.location.alt/100.0f;
-      int16_t cmd_idx = log_cmd.index;
-    
-      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-      
-      log_cmd = virtual_wp.get_vwp2();
-      cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
-      cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
-      cmd_alt = log_cmd.content.location.alt/100.0f;
-      cmd_idx = log_cmd.index;
-    
-      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-      
-      log_cmd = virtual_wp.get_vwp1();
-      cmd_lat = log_cmd.content.location.lat*TO_DEG_FORMAT;
-      cmd_lng = log_cmd.content.location.lng*TO_DEG_FORMAT;
-      cmd_alt = log_cmd.content.location.alt/100.0f;
-      cmd_idx = log_cmd.index;
-    
-      GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);      
-      
-    }
-    
-    float lcmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
-    float lcmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
-    float lcmd_alt = cmd.content.location.alt/100.0f;
-    int16_t lcmd_idx = cmd.index;
-    
-    GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",lcmd_idx,lcmd_idx,lcmd_lat,lcmd_lng,lcmd_alt);
+    log_waypoint(cmd);
     
     // ========================================================================================
     // After issuing the landing cmd the mission is restored to its original state

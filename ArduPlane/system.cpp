@@ -314,8 +314,14 @@ void Plane::startup_ground(void)
     serial_manager.set_blocking_writes_all(false);
 
     ins.set_raw_logging(should_log(MASK_LOG_IMU_RAW));
-    ins.set_dataflash(&DataFlash);   
+    ins.set_dataflash(&DataFlash);  
     
+    check_mission();
+    
+}
+
+void Plane::check_mission()
+{
     // Before notifying the USER if the UAv is ready to fly, I do one extra check about the mission stored in the eeprom.  
     // Here I check if the mission contains the following required items:
     // 1. Takeoff waypoint
@@ -373,6 +379,7 @@ void Plane::startup_ground(void)
     }
     else
       gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("\n\nNot Ready to FLY."));
+  
 }
 
 enum FlightMode Plane::get_previous_mode() {
