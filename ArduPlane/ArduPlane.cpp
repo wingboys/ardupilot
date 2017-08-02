@@ -150,6 +150,7 @@ void Plane::loop()
 void Plane::init_vwp()
 {
   
+    // We make sure we are on the ground before initializing the virtual waypoint parameters
     if(!is_flying() && isFlyingProbability <= 0.1)
     {
         // ========================================================================================
@@ -170,6 +171,8 @@ void Plane::init_vwp()
 	else
 	{
 	    GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
+	    GCS_SEND_MSG("UAV will fly without VWP: %d",virtual_wp.vwp_error);	    
+	    virtual_wp.disable();
 	}
       
     }

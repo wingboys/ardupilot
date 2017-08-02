@@ -74,7 +74,8 @@ VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs):
 	_mission(mission),
 	_ahrs(ahrs),
 	vwp_cfg{2,4}
-{}
+{
+}
 
 void VirtualWP::init(void)
 {
@@ -194,11 +195,11 @@ bool VirtualWP::is_change_speed_cmd_issued(const AP_Mission::Mission_Command& cm
 }
 
 // This function generates the virtual waypoints to attach at the end of mission, right before the landing waypoint
-void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cmd)
+void VirtualWP::generate(const AP_Mission::Mission_Command& cmd)
 {
 
     // Check if the current cmd is where I should generate the virtual waypoints and there are no errors
-    if(cmd.index == idx_vwp && vwp_error == VWP_NO_ERROR)
+    if(vwp_enabled && cmd.index == idx_vwp && vwp_error == VWP_NO_ERROR)
     {
 	//GCS_SEND_MSG("Generating VWP: %d",cmd.index);
 
@@ -220,7 +221,6 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	// -------------------------------------------------------------------------------
 
 	// Retrieve the landing waypoint from the mission
-	AP_Mission::Mission_Command wp;
 	// The index of the mission starts from 0.
 	_mission.get_next_nav_cmd(idx_landing_wp, wp);
 
@@ -428,9 +428,8 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	vwp1 = last_mwp;
 	vwp1.id = MAV_CMD_NAV_WAYPOINT;
 	vwp1.content.location = loc_vwp1;
-	    
-
-	if(vwp_enabled)
+	
+	if(vwp_enabled && vwp_error == VWP_NO_ERROR)
 	{
 	    _mission.truncate(idx_landing_wp);
 	    _mission.add_cmd(vwp3);
@@ -440,9 +439,9 @@ void VirtualWP::generate_virtual_waypoints(const AP_Mission::Mission_Command& cm
 	    // For the moment the UAV will still land at the original landing waypoint
 	    _mission.add_cmd(wp);
 	}
-
+	    
 	vwp_status = VWP_GENERATED;
-
+	
 	update_num_commands();
 
     }
@@ -463,7 +462,7 @@ void VirtualWP::restore_mission()
     {
 	// Here I restore the original version of the mission (in case it should be reloaded)
 	// GCS_SEND_MSG("Restoring original mission");
-	AP_Mission::Mission_Command wp;
+	// AP_Mission::Mission_Command wp;
 
 	// GCS_SEND_MSG("Number of commands: %d",num_commands);
 	// The variable wp will contain the landinig waypoint that I need to restore

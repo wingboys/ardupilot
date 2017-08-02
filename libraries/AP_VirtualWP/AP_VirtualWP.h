@@ -72,7 +72,7 @@ public:
     bool is_change_speed_cmd_issued(const AP_Mission::Mission_Command& cmd);
     
     /// generate_virtual_waypoints - generates the virtual waypoints based on the current settings and the wind direction.
-    void generate_virtual_waypoints(const AP_Mission::Mission_Command& cmd);
+    void generate(const AP_Mission::Mission_Command& cmd);
     
     /// update_num_commands - updates the variable containing the number of commands in the mission. This function is called after
     /// the addition and removal of the virtual waypoints.
@@ -156,6 +156,10 @@ private:
     AP_Mission::Mission_Command vwp2;
     AP_Mission::Mission_Command vwp3;
     AP_Mission::Mission_Command reduce_speed;
+    
+    // This is for storing the landing waypoint
+    AP_Mission::Mission_Command wp;
+    
 
     AP_Mission&		_mission;
     AP_AHRS_NavEKF&	_ahrs;

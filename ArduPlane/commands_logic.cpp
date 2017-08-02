@@ -371,11 +371,12 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     
     // ========================================================================================
     // Check if it's time to generate the virtual waypoints
-    virtual_wp.generate_virtual_waypoints(cmd);
+    virtual_wp.generate(cmd);
 
     if(virtual_wp.vwp_status == VWP_GENERATED && !message_visualized)
     {
         GCS_SEND_MSG("Virtual WP generated");
+      
         GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
 	
 	message_visualized = true;
