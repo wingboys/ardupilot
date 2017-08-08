@@ -331,6 +331,9 @@ void Plane::check_mission()
     mission_usable = true;
     vwp_feature_usable = true;
     
+    // First thing to do is check what's inside the eeprom or what has been just written.
+    mission.inspect_stored_mission();
+    
     if(!mission.is_takeoff_wp_present())
     {
       mission_usable = false;

@@ -1795,6 +1795,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
 	
 	if(is_vwp_setting_received())
 	{
+	   send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP SETTING RECEIVED"));
+	   hal.scheduler->delay(1000);
 	   disable_vwp_setting_received();
 	   plane.check_mission();
 	}	
