@@ -117,7 +117,7 @@
 
 #ifdef WINGBOYS
 #include <AP_VirtualWP/AP_VirtualWP.h>
-#include <AP_MissionCheck/AP_MissionCheck.h>
+#include <AP_MissionCheck/AP_MissionCheck_VWP.h>
 #endif
 
 #ifndef TEST_WINGBOYS
@@ -717,7 +717,7 @@ private:
     
 #ifdef WINGBOYS
     VirtualWP virtual_wp{mission,ahrs,DataFlash};
-    MissionCheck mission_checker{mission};
+    MissionCheck_VWP mission_checker_vwp{mission};
 #endif
 
     void check_mission();

@@ -30,7 +30,7 @@ public:
     uint16_t get_num_nav_wayponts() { return num_nav_wayponts; }
     
     // TODO: Implement a virtual method for checking the class
-    //virtual void check() = 0;
+    virtual void check() = 0;
 
 protected:
 
