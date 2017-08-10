@@ -28,6 +28,9 @@ public:
     bool is_takeoff_wp_present() { return takeoff_wp_present; }
     bool is_landing_wp_present() { return landing_wp_present; }
     uint16_t get_num_nav_wayponts() { return num_nav_wayponts; }
+    
+    // TODO: Implement a virtual method for checking the class
+    //virtual void check() = 0;
 
 protected:
 
