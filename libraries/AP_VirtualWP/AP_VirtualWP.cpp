@@ -5,7 +5,10 @@
  *      Author: Alessandro Benini
  */
 
+#include <stdio.h>
 #include "AP_VirtualWP.h"
+
+bool vwp_generated_message_visualized;
 
 const AP_Param::GroupInfo VirtualWP::var_info[] = {
 
@@ -68,36 +71,79 @@ const AP_Param::GroupInfo VirtualWP::var_info[] = {
 };
 
 
-VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs):
+VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs, DataFlash_Class &dataflash):
 	vwp_status(VWP_NOT_GENERATED),
 	vwp_error(VWP_NO_ERROR),
 	_mission(mission),
 	_ahrs(ahrs),
+	_dataflash(dataflash),
 	vwp_cfg{2,4}
 {
+    vwp_generated_message_visualized = false;
+    msg = NULL;
 }
 
-void VirtualWP::init(void)
+void VirtualWP::init(bool isFlying, float isFlyingProbability)
 {
-    num_cmd = _mission.num_commands();
-    
-    // I initialize all the indexes with default values
-    idx_landing_wp = -1;
-    idx_last_mission_wp = -1;
-    idx_vwp = 0;
+    if(!isFlying && isFlyingProbability <= 0.1f)
+    {
+	num_cmd = _mission.num_commands();
+	
+	// I initialize all the indexes with default values
+	idx_landing_wp = -1;
+	idx_last_mission_wp = -1;
+	idx_vwp = 0;
 
-    // I calculate all the indexes
-    calc_index_landing_waypoint();
-    calc_index_last_mission_waypoint();
-    calc_index_virtual_waypoints();
-    
-    vwp1 = {};
-    vwp2 = {};
-    vwp3 = {};
-    reduce_speed = {};
-    
-    num_min_nav_waypoints = 3;
-    
+	// I calculate all the indexes
+	calc_index_landing_waypoint();
+	calc_index_last_mission_waypoint();
+	calc_index_virtual_waypoints();
+	
+	vwp1 = {};
+	vwp2 = {};
+	vwp3 = {};
+	reduce_speed = {};
+	
+	num_min_nav_waypoints = 3;
+	
+	asprintf(&msg,"Num commands: %d", get_num_commands());
+	logInfo(msg);
+	asprintf(&msg,"Idx Last MWP: %d",get_idx_last_mission_wp());
+	logInfo(msg);
+	asprintf(&msg,"Idx Land WP: %d",get_idx_landing_wp());
+	logInfo(msg);
+	asprintf(&msg,"Idx VWP: %d",get_idx_vwp());
+	logInfo(msg);
+
+	// Currently, if the index calculation fails, we disable the VWP feature
+	// We could think about aborting the mission in some particular circumstances.
+	if(vwp_error == VWP_NO_ERROR)
+	{
+	    asprintf(&msg,"Indexes calculated correctly");
+	    logInfo(msg);
+	}
+	else
+	{
+	    asprintf(&msg,"Error during index generation: %d",vwp_error);
+	    logInfo(msg);  
+	    // disable virtual waypoint feature
+	    disable();	
+	}
+    }
+    else
+    {
+	asprintf(&msg,"Virtual WP cannot be calculated in flight");
+	logInfo(msg);  
+	// disable virtual waypoint feature
+	disable();
+    }
+       
+}
+
+void VirtualWP::logInfo(char* _msg)
+{
+    GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_CRITICAL, PSTR(_msg));
+    _dataflash.Log_Write_Message_P(PSTR(_msg));
 }
 
 void VirtualWP::calc_index_landing_waypoint(void)
@@ -309,6 +355,8 @@ void VirtualWP::generate(const AP_Mission::Mission_Command& cmd)
 	new_theta_vwp = thetaWind + heading_wind*DEG_TO_RAD;
 	// GCS_SEND_MSG("WIND_DIR:%f",thetaWind*180.0f/3.1415f);
 
+	asprintf(&msg,"VWP direction: %f",new_theta_vwp);
+	logInfo(msg);  
 
 	// GCS_SEND_MSG("OLD L_WP:%10.6f,%10.6f,%8.3f",land_wp_lat,land_wp_lng,land_wp_alt);
 	// GCS_SEND_MSG("VWPS_DIRd:%f",new_theta_vwp*180.0f/3.1415f);
@@ -443,7 +491,14 @@ void VirtualWP::generate(const AP_Mission::Mission_Command& cmd)
 	vwp_status = VWP_GENERATED;
 	
 	update_num_commands();
-
+	
+	if(!vwp_generated_message_visualized)
+	{
+	    asprintf(&msg,"VWP GENERATED");
+	    logInfo(msg);  
+	    vwp_generated_message_visualized = true;	  
+	}
+    
     }
 
 }
@@ -487,7 +542,13 @@ void VirtualWP::restore_mission()
 	vwp_status = VWP_REMOVED;
 	
 	update_num_commands();
-
+	
+	asprintf(&msg,"Num commands: %d", get_num_commands());
+	logInfo(msg);
+	
+	asprintf(&msg,"Original mission restored");
+	logInfo(msg);
+	
     }
 }
 

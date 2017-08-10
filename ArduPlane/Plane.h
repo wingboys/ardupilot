@@ -117,6 +117,7 @@
 
 #ifdef WINGBOYS
 #include <AP_VirtualWP/AP_VirtualWP.h>
+#include <AP_MissionCheck/AP_MissionCheck.h>
 #endif
 
 #ifndef TEST_WINGBOYS
@@ -155,12 +156,12 @@ public:
     void setup();
     void loop();
     
-    // This is an interface for the accessing the virtual waypoint class from outside
-    void init_vwp();
+    // This function is going to be removed
     bool is_vwp_enabled() { return virtual_wp.is_vwp_enabled(); }
 
 private:
   
+    // The following two variables are going to be removed
     bool mission_usable;
     bool vwp_feature_usable;
     
@@ -715,10 +716,12 @@ private:
     bool tilt_to_fwd = false;
     
 #ifdef WINGBOYS
-    VirtualWP virtual_wp{mission,ahrs};
+    VirtualWP virtual_wp{mission,ahrs,DataFlash};
+    MissionCheck mission_checker{mission};
 #endif
 
     void check_mission();
+    
     void demo_servos(uint8_t i);
     void adjust_nav_pitch_throttle(void);
     void update_load_factor(void);
@@ -744,7 +747,8 @@ private:
     void gcs_send_mission_item_reached_message(uint16_t mission_index);
     void gcs_data_stream_send(void);
     void gcs_update(void);
-    void gcs_send_text_P(MAV_SEVERITY severity, const prog_char_t *str);
+    
+    void gcs_send_text_P(MAV_SEVERITY severity, const prog_char_t *str);    
     void gcs_send_airspeed_calibration(const Vector3f &vg);
     void gcs_retry_deferred(void);
 

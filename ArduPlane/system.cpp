@@ -256,6 +256,8 @@ void Plane::init_ardupilot()
 #if OPTFLOW == ENABLED
     optflow.init();
 #endif
+    
+    //check_mission();
 
 }
 
@@ -306,6 +308,7 @@ void Plane::startup_ground(void)
 
     // reset last heartbeat time, so we don't trigger failsafe on slow
     // startup
+    // TODO: THIS SHOULD BE PUT AFTER THE CHECKING MISSION IN ORDER TO PREVENT SHORT FAILSAFE EVENT AT THE BEGINNING
     failsafe.last_heartbeat_ms = millis();
 
     // we don't want writes to the serial port to cause us to pause
@@ -316,10 +319,16 @@ void Plane::startup_ground(void)
     ins.set_raw_logging(should_log(MASK_LOG_IMU_RAW));
     ins.set_dataflash(&DataFlash);  
     
-    check_mission();
-    
 }
 
+// TODO: Modify this mission using the AP_MissionCheck library
+void Plane::check_mission()
+{
+    // TODO: Modify this mission using the AP_MissionCheck library
+    // This function is called also inside the GCS_Mavlink class for re-checking the mission when something changes
+}
+
+/**
 void Plane::check_mission()
 {
     // Before notifying the USER if the UAv is ready to fly, I do one extra check about the mission stored in the eeprom.  
@@ -327,6 +336,9 @@ void Plane::check_mission()
     // 1. Takeoff waypoint
     // 2. Landing waypoint
     // 3. At least one navigation waypoint
+    
+    gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("CHECKING MISSION"));
+    hal.scheduler->delay(1000);
     
     mission_usable = true;
     vwp_feature_usable = true;
@@ -370,8 +382,10 @@ void Plane::check_mission()
 	    hal.scheduler->delay(1000);
 	}
 	else
-	    init_vwp();
+	  virtual_wp.init(is_flying(),isFlyingProbability);
     }
+    else
+	gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP disabled"));
 
     if(mission_usable)
     {
@@ -386,6 +400,7 @@ void Plane::check_mission()
     // Here I should start waiting for messages from the GD Pilot assuring that everything is fine from his side.
   
 }
+*/
 
 enum FlightMode Plane::get_previous_mode() {
     return previous_mode; 

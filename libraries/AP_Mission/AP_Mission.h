@@ -258,19 +258,7 @@ public:
         _flags.nav_cmd_loaded = false;
         _flags.do_cmd_loaded = false;
 	
-	found_takeoff_wp = false;
-	found_landing_wp = false;
-	num_nav_wayponts = 0;
     }
-    
-    
-    bool found_takeoff_wp;
-    bool found_landing_wp;
-    uint16_t  num_nav_wayponts;
-    
-    bool is_takeoff_wp_present() { return found_takeoff_wp; }
-    bool is_landing_wp_present() { return found_landing_wp; }
-    uint16_t get_num_nav_wayponts() { return num_nav_wayponts; }
   
     ///
     /// public mission methods
@@ -278,9 +266,6 @@ public:
 
     /// init - initialises this library including checks the version in eeprom matches this library
     void init();
-    
-    // Inspect if a mission is loaded at startup. Returns true if we have a takeoff waypoint, a landing waypoint and at least one mission waypoint.
-    void inspect_stored_mission();
 
     /// status - returns the status of the mission (i.e. Mission_Started, Mission_Complete, Mission_Stopped
     mission_state state() const { return _flags.state; }
@@ -338,19 +323,6 @@ public:
 
     /// get_current_nav_cmd - returns the current "navigation" command
     const Mission_Command& get_current_nav_cmd() const { return _nav_cmd; }
-    
-    /// get_index_last_nav_WP - returns the index of the last mission waypoint.
-    int16_t get_index_last_nav_WP();
-
-    /// get_index_landing_WP - returns the index of the landing waypoint. The landing waypoint
-    /// should always be the last item. But this function is implemented in order to contemplate
-    /// the case where further actions are programmed after the landing and/or to make sure that
-    /// a landing waypoint is set.
-    int16_t get_index_landing_WP();
-
-    /// get_index_for_VWP_generation - return the index of the nav cmd item after which the vwp will be generated (referred to as CMD_VWP)
-    /// returns 0 if the mission is shorter than the distance between landing waypoint and CMD_VWP
-    int16_t get_index_for_VWP_generation(int16_t n);
 
     /// get_current_nav_index - returns the current "navigation" command index
     /// Note that this will return 0 if there is no command. This is

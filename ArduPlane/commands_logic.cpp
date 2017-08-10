@@ -2,8 +2,6 @@
 
 #include "Plane.h"
 
-bool message_visualized = false;
-
 /********************************************************************************/
 // Command Event Handlers
 /********************************************************************************/
@@ -340,53 +338,16 @@ void Plane::do_takeoff(const AP_Mission::Mission_Command& cmd)
     auto_state.baro_takeoff_alt = barometer.get_altitude();
 }
 
-void Plane::log_waypoint(const AP_Mission::Mission_Command& cmd)
-{ 
-
-    // Log information on the SD card
-    float cmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
-    float cmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
-    float cmd_alt = cmd.content.location.alt/100.0f;
-    int16_t cmd_idx = cmd.index;
-
-    // if(virtual_wp.is_current_cmd_vwp(cmd))
-    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
-    {
-	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
-    }
-    else if(cmd.id == MAV_CMD_NAV_LAND)
-    {
-	GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,2);
-    }
-    else
-    {
-	GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
-	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,0);
-    }
-  
-}
-
 void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
 {
   
     // First I set the current waypoint, so the mission keeps going
     set_next_WP(cmd.content.location); 
     
-    // ========================================================================================
+    // TODO: See if it's possible to move everything on a dedicated thread
+    
     // Check if it's time to generate the virtual waypoints
     virtual_wp.generate(cmd);
-
-    if(virtual_wp.vwp_status == VWP_GENERATED && !message_visualized)
-    {
-        GCS_SEND_MSG("Virtual WP generated");
-      
-        GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
-	
-	message_visualized = true;
-    }
-    
     // This function will log both, normal and virtual waypoints
     log_waypoint(cmd);
     
@@ -415,17 +376,9 @@ void Plane::do_land(const AP_Mission::Mission_Command& cmd)
     memset(&rangefinder_state, 0, sizeof(rangefinder_state));
 #endif
     
-    log_waypoint(cmd);
-    
-    // ========================================================================================
     // After issuing the landing cmd the mission is restored to its original state
     virtual_wp.restore_mission();
-    if(virtual_wp.vwp_status == VWP_REMOVED)
-    {
-        GCS_SEND_MSG("Original mission restored");
-        GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
-    }
-    // ========================================================================================
+    log_waypoint(cmd);
     
 }
 
@@ -1019,4 +972,33 @@ void Plane::exit_mission_callback()
         setup_turn_angle();
         start_command(auto_rtl_command);
     }
+}
+
+// Custom function for logging debug information about the waypoints
+void Plane::log_waypoint(const AP_Mission::Mission_Command& cmd)
+{ 
+
+    // Log information on the SD card
+    float cmd_lat = cmd.content.location.lat*TO_DEG_FORMAT;
+    float cmd_lng = cmd.content.location.lng*TO_DEG_FORMAT;
+    float cmd_alt = cmd.content.location.alt/100.0f;
+    int16_t cmd_idx = cmd.index;
+
+    // if(virtual_wp.is_current_cmd_vwp(cmd))
+    if(cmd.index > virtual_wp.get_idx_last_mission_wp() && cmd.id == MAV_CMD_NAV_WAYPOINT)
+    {
+	GCS_SEND_MSG("VWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,1);
+    }
+    else if(cmd.id == MAV_CMD_NAV_LAND)
+    {
+	GCS_SEND_MSG("LWP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,2);
+    }
+    else
+    {
+	GCS_SEND_MSG("WP(%d),%d,%10.6f,%10.6f,%8.3f",cmd_idx,cmd_idx,cmd_lat,cmd_lng,cmd_alt);
+	Log_Write_VWP(cmd_idx,cmd_lat,cmd_lng,cmd_alt,0);
+    }
+  
 }

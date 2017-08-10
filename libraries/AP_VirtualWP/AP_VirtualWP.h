@@ -9,8 +9,9 @@
 #define AP_VIRTUALWP_H_
 
 #include <AP_Mission/AP_Mission.h>
-#include <GCS_MAVLink/GCS_MAVLink.h>
+#include <GCS_MAVLink/GCS.h>
 #include <AP_AHRS/AP_AHRS.h>
+#include <DataFlash/DataFlash.h>
 
 // Macro for converting the latitude and longitude back to decimal representation
 #define TO_DEG_FORMAT 1.0e-7f
@@ -19,7 +20,7 @@
 // Macro for calculating how many meters for 1 degree of longitude, given the current latitude in degrees.
 #define METERS_PER_DEG_LNG(lat) 111132.954*cos(lat*DEG_TO_RAD);
 
-// This the maximum variation of altitude between two consecutive virtual waypoints (value expressed in meters)
+// This is the maximum variation of altitude between two consecutive virtual waypoints (value expressed in meters)
 #define MAX_STEP 20.0f
 #define MAX_STEP_CM MAX_STEP*100.0f
 
@@ -45,7 +46,7 @@ class VirtualWP
 public:
 
     // Constructor
-    VirtualWP(AP_Mission &mission, AP_AHRS_NavEKF &ahrs);
+    VirtualWP(AP_Mission &mission, AP_AHRS_NavEKF &ahrs, DataFlash_Class &dataflash);
 
     // Destructor
     ~VirtualWP() {}
@@ -54,7 +55,7 @@ public:
     static const struct AP_Param::GroupInfo var_info[];
 
     // Initialize the indexes for calculating the virtual waypoints
-    void init(void);
+    void init(bool isFlying, float isFlyingProbability);
 
     /// calc_index_landing_waypoint - returns the index of the landing waypoint. The landing waypoint
     /// should always be the last item. But this function is implemented in order to contemplate
@@ -82,6 +83,8 @@ public:
     bool is_current_cmd_vwp(const AP_Mission::Mission_Command& cmd);
     
     void restore_mission();
+    
+    void logInfo(char* msg);
     
     void enable() { vwp_enabled = 1; }
     void disable() { vwp_enabled = 0; }
@@ -163,6 +166,10 @@ private:
 
     AP_Mission&		_mission;
     AP_AHRS_NavEKF&	_ahrs;
+    DataFlash_Class&	_dataflash;
+    
+    // Generig message container for logging
+    char* msg;
 
 };
 

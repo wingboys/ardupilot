@@ -31,11 +31,14 @@
     .max_time_micros = _max_time_micros,\
 }
 
+// The following varibales are for debug only
 int one_sec_cnt = 0;
 int _flag_cnt = 0;
 bool mission_rewrote = false;
 bool mission_restored = false;
-bool vwp_status_printed = false;
+// -----------------------------------------
+
+bool mission_checked_at_startup = false;
 
 /*
   scheduler table - all regular tasks are listed here, along with how
@@ -145,39 +148,6 @@ void Plane::loop()
         remaining = 19500;
     }
     scheduler.run(remaining);
-}
-
-void Plane::init_vwp()
-{
-  
-    // We make sure we are on the ground before initializing the virtual waypoint parameters
-    if(!is_flying() && isFlyingProbability <= 0.1)
-    {
-        // ========================================================================================
-	// Initialize the virtual waypoint procedure
-	virtual_wp.init();
-
-	GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
-	GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
-	GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
-	GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
-
-	// Currently, if the index calculation fails, we do nothing.
-	// We could think about aborting the mission in some particular circumstances.
-	if(virtual_wp.vwp_error == VWP_NO_ERROR)
-	{
-	    GCS_SEND_MSG("Index calculated correctly.");
-	}
-	else
-	{
-	    GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
-	    GCS_SEND_MSG("UAV will fly without VWP: %d",virtual_wp.vwp_error);	    
-	    virtual_wp.disable();
-	}
-      
-    }
-	    
-    // ======================================================================================== 
 }
 
 // update AHRS system
@@ -339,15 +309,10 @@ void Plane::update_aux(void)
 void Plane::one_second_loop()
 {
   
-    if(!vwp_status_printed)
+    if(!mission_checked_at_startup)
     {
-      
-	if(virtual_wp.is_vwp_enabled())
-	    GCS_SEND_MSG("VWP enabled");
-	else
-	    GCS_SEND_MSG("VWP disabled");
-
-	vwp_status_printed = true;
+	check_mission();
+	mission_checked_at_startup = true;
     }
     
     /**

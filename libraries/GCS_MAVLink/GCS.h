@@ -82,6 +82,7 @@ class GCS_MAVLINK
 {
 public:
     GCS_MAVLINK();
+    
     FUNCTOR_TYPEDEF(run_cli_fn, void, AP_HAL::UARTDriver*);
     void        update(run_cli_fn run_cli);
     void        init(AP_HAL::UARTDriver *port, mavlink_channel_t mav_chan);
