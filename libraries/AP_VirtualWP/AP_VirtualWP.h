@@ -159,6 +159,7 @@ private:
     AP_Mission::Mission_Command vwp2;
     AP_Mission::Mission_Command vwp3;
     AP_Mission::Mission_Command reduce_speed;
+    AP_Mission::Mission_Command lta;
     
     // This is for storing the landing waypoint
     AP_Mission::Mission_Command wp;

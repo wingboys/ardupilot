@@ -305,6 +305,7 @@ void Plane::update_aux(void)
 
 void Plane::one_second_loop()
 {
+
     /**
     if(virtual_wp.is_vwp_enabled())
     {
@@ -324,9 +325,8 @@ void Plane::one_second_loop()
 	    one_time_restore();
 	    mission_restored = true;
 	}
-    }
+    }  
     */
-    
     
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
