@@ -74,8 +74,8 @@ const AP_Param::GroupInfo VirtualWP::var_info[] = {
 
 
 VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs, DataFlash_Class &dataflash):
-	vwp_status(VWP_NOT_GENERATED),
-	vwp_error(VWP_NO_ERROR),
+	vwp_status(VWP_ERROR_INITIAL_VALUE),
+	vwp_error(VWP_ERROR_STATUS_INITIAL_VALUE),
 	_mission(mission),
 	_ahrs(ahrs),
 	_dataflash(dataflash),

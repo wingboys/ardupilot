@@ -28,6 +28,7 @@
 
 // List of states concerning the generation of the virtual waypoints
 typedef enum vwp_generation_states {
+	VWP_ERROR_INITIAL_VALUE = -1,
 	VWP_NOT_GENERATED = 0,
 	VWP_GENERATED,
 	VWP_REMOVED
@@ -35,6 +36,7 @@ typedef enum vwp_generation_states {
 
 // List of the possible error during the generation of the virtual waypoints
 typedef enum vwp_error_states {
+	VWP_ERROR_STATUS_INITIAL_VALUE = -1,
 	VWP_NO_ERROR = 0,
 	VWP_LANDING_WP_NOT_FOUND,
 	VWP_LAST_MISSION_WP_NOT_FOUND,
