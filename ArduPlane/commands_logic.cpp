@@ -17,7 +17,7 @@ bool Plane::start_command(const AP_Mission::Mission_Command& cmd)
         // set land_complete to false to stop us zeroing the throttle
         auto_state.land_complete = false;
         auto_state.sink_rate = 0;
-// 
+ 
         // set takeoff_complete to true so we don't add extra evevator
         // except in a takeoff
         auto_state.takeoff_complete = true;
@@ -344,10 +344,9 @@ void Plane::do_nav_wp(const AP_Mission::Mission_Command& cmd)
     // First I set the current waypoint, so the mission keeps going
     set_next_WP(cmd.content.location); 
     
-    // TODO: See if it's possible to move everything on a dedicated thread
-    
     // Check if it's time to generate the virtual waypoints
     virtual_wp.generate(cmd);
+    
     // This function will log both, normal and virtual waypoints
     log_waypoint(cmd);
     

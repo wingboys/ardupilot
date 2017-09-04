@@ -32,9 +32,6 @@ GCS_MAVLINK::GCS_MAVLINK() :
 {
     AP_Param::setup_object_defaults(this, var_info);
     neitzkePilot_detected = false;
-    
-    new_mission_received = false;
-    vwp_setting_received = false;
 }
 
 void
@@ -551,6 +548,24 @@ void GCS_MAVLINK::handle_param_request_read(mavlink_message_t *msg)
         packet.param_index);
 }
 
+bool GCS_MAVLINK::is_parameter_name(const char* param_name,mavlink_message_t *msg)
+{
+    mavlink_param_set_t packet;
+    mavlink_msg_param_set_decode(msg, &packet);
+    char key[AP_MAX_NAME_SIZE+1];
+    strncpy(key, (char *)packet.param_id, AP_MAX_NAME_SIZE);
+    
+    //send_text(MAV_SEVERITY_WARNING, "TEST KEY");  
+    //hal.scheduler->delay(500);
+    //send_text(MAV_SEVERITY_WARNING, param_name); 
+    //hal.scheduler->delay(500);
+    send_text(MAV_SEVERITY_WARNING, key);
+    
+    if(!strcmp(key,param_name))
+      return true;
+    return false;  
+}
+
 void GCS_MAVLINK::handle_param_set(mavlink_message_t *msg, DataFlash_Class *DataFlash)
 {
     mavlink_param_set_t packet;
@@ -601,17 +616,6 @@ void GCS_MAVLINK::handle_param_set(mavlink_message_t *msg, DataFlash_Class *Data
     if (DataFlash != NULL) {
         DataFlash->Log_Write_Parameter(key, vp->cast_to_float(var_type));
     }
-    
-    // Here I check if the parameter received is about the virtual wp
-    // The key VWP_ENABLE is hardcoded on the VirtualWP class.
-    if(!strcmp(key,"VWP_ENABLE"))    
-    {
-        // I check if the value is greater than 0.5 to avoid using == between two float numbers
-	//if(packet.param_value > 0.5)	
-	vwp_setting_received = true;
-	//else
-	//  vwp_disable();	
-    }  
     
 }
 
@@ -779,9 +783,6 @@ bool GCS_MAVLINK::handle_mission_item(mavlink_message_t *msg, AP_Mission &missio
 	}
         
         send_text_P(MAV_SEVERITY_WARNING,PSTR("flight plan received"));
-	
-	// This variable is set anytime the user sends a new mission
-	new_mission_received = true;	
 	
         waypoint_receiving = false;
         mission_is_complete = true;

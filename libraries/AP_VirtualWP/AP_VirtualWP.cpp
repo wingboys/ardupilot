@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "AP_VirtualWP.h"
 
+extern const AP_HAL::HAL &hal;
+
 bool vwp_generated_message_visualized;
 
 const AP_Param::GroupInfo VirtualWP::var_info[] = {
@@ -83,67 +85,60 @@ VirtualWP::VirtualWP(AP_Mission& mission, AP_AHRS_NavEKF &ahrs, DataFlash_Class 
     msg = NULL;
 }
 
-void VirtualWP::init(bool isFlying, float isFlyingProbability)
+void VirtualWP::init()
 {
-    if(!isFlying && isFlyingProbability <= 0.1f)
-    {
-	num_cmd = _mission.num_commands();
-	
-	// I initialize all the indexes with default values
-	idx_landing_wp = -1;
-	idx_last_mission_wp = -1;
-	idx_vwp = 0;
+    // Re-initialize the status variables
+    vwp_status = VWP_NOT_GENERATED;
+    vwp_error = VWP_NO_ERROR;
+    
+    num_cmd = _mission.num_commands();
 
-	// I calculate all the indexes
-	calc_index_landing_waypoint();
-	calc_index_last_mission_waypoint();
-	calc_index_virtual_waypoints();
-	
-	vwp1 = {};
-	vwp2 = {};
-	vwp3 = {};
-	reduce_speed = {};
-	
-	num_min_nav_waypoints = 3;
-	
-	asprintf(&msg,"Num commands: %d", get_num_commands());
-	logInfo(msg);
-	asprintf(&msg,"Idx Last MWP: %d",get_idx_last_mission_wp());
-	logInfo(msg);
-	asprintf(&msg,"Idx Land WP: %d",get_idx_landing_wp());
-	logInfo(msg);
-	asprintf(&msg,"Idx VWP: %d",get_idx_vwp());
-	logInfo(msg);
+    // I initialize all the indexes with default values
+    idx_landing_wp = -1;
+    idx_last_mission_wp = -1;
+    idx_vwp = 0;
 
-	// Currently, if the index calculation fails, we disable the VWP feature
-	// We could think about aborting the mission in some particular circumstances.
-	if(vwp_error == VWP_NO_ERROR)
-	{
-	    asprintf(&msg,"Indexes calculated correctly");
-	    logInfo(msg);
-	}
-	else
-	{
-	    asprintf(&msg,"Error during index generation: %d",vwp_error);
-	    logInfo(msg);  
-	    // disable virtual waypoint feature
-	    disable();	
-	}
-    }
-    else
+    // I calculate all the indexes
+    calc_index_landing_waypoint();
+    calc_index_last_mission_waypoint();
+    calc_index_virtual_waypoints();
+
+    vwp1 = {};
+    vwp2 = {};
+    vwp3 = {};
+    reduce_speed = {};
+
+    asprintf(&msg,"Num commands: %d", get_num_commands());
+    logInfo(msg);
+    asprintf(&msg,"Idx Last MWP: %d",get_idx_last_mission_wp());
+    logInfo(msg);
+    asprintf(&msg,"Idx Land WP: %d",get_idx_landing_wp());
+    logInfo(msg);
+    asprintf(&msg,"Idx VWP: %d",get_idx_vwp());
+    logInfo(msg);
+
+    // Currently, if the index calculation fails, we disable the VWP feature
+    // We could think about aborting the mission in some particular circumstances.
+    if(vwp_error != VWP_NO_ERROR)
     {
-	asprintf(&msg,"Virtual WP cannot be calculated in flight");
+	asprintf(&msg,"Error during index generation: %d",vwp_error);
 	logInfo(msg);  
 	// disable virtual waypoint feature
-	disable();
+	// disable();	
     }
        
+}
+
+bool VirtualWP::check_parameter()
+{
+    // TODO: To be defined
 }
 
 void VirtualWP::logInfo(char* _msg)
 {
     GCS_MAVLINK::send_statustext_all(MAV_SEVERITY_CRITICAL, PSTR(_msg));
     _dataflash.Log_Write_Message_P(PSTR(_msg));
+    hal.scheduler->delay(500);
 }
 
 void VirtualWP::calc_index_landing_waypoint(void)

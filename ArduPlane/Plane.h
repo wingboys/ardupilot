@@ -117,7 +117,7 @@
 
 #ifdef WINGBOYS
 #include <AP_VirtualWP/AP_VirtualWP.h>
-#include <AP_MissionCheck/AP_MissionCheck_VWP.h>
+#include <AP_MissionCheck/MissionCheck.h>
 #endif
 
 #ifndef TEST_WINGBOYS
@@ -156,14 +156,10 @@ public:
     void setup();
     void loop();
     
-    // This function is going to be removed
+    // This function is going to be removed (it's used to simulate the mission without actually flying)
     bool is_vwp_enabled() { return virtual_wp.is_vwp_enabled(); }
 
 private:
-  
-    // The following two variables are going to be removed
-    bool mission_usable;
-    bool vwp_feature_usable;
     
     // key aircraft parameters passed to multiple libraries
     AP_Vehicle::FixedWing aparm;
@@ -716,8 +712,8 @@ private:
     bool tilt_to_fwd = false;
     
 #ifdef WINGBOYS
-    VirtualWP virtual_wp{mission,ahrs,DataFlash};
-    MissionCheck_VWP mission_checker_vwp{mission};
+    VirtualWP virtual_wp{mission,ahrs,DataFlash}; 
+    MissionCheck* mission_checker;   
 #endif
 
     void check_mission();

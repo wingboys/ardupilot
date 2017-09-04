@@ -1684,23 +1684,12 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     // GCS has sent us a mission item, store to EEPROM
     case MAVLINK_MSG_ID_MISSION_ITEM:
     {
+	// handle_mission_item returns true when the whole mission is received
         if (handle_mission_item(msg, plane.mission)) {
             plane.DataFlash.Log_Write_EntireMission(plane.mission);
-        }
-        
-	// If the user doesn't set the mission properly or if it wants to use the virtual waypoint feature
-	// but the mission is not usable for such purpose, he has to modfiy the mission. 
-	// Remodifying the mission will just re-do all the checks that have been done at the beggining
-	// to make sure that the new mission is ok.
-        if(is_new_mission_received())
-	{
-	    send_text_P(MAV_SEVERITY_WARNING,PSTR("NEW MISSION RECEIVED"));
+	    // check the mission
 	    plane.check_mission();
-	    
-	    // I disbale the flag of the new mission since it could happen that the user needs
-	    // to resend the mission multiple times.	    
-	    disable_new_mission_flag();	    
-	}
+        }
         
         break;
     }
@@ -1791,15 +1780,16 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
 
     case MAVLINK_MSG_ID_PARAM_SET:
     {
+	// This check must be done before calling the handle_param_set
+	bool is_vwp_enable_received = is_parameter_name("VWP_ENABLE",msg);
+	
         handle_param_set(msg, &plane.DataFlash);
 	
-	if(is_vwp_setting_received())
+	if(is_vwp_enable_received)
 	{
-	   send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP SETTING RECEIVED"));
-	   hal.scheduler->delay(1000);
-	   disable_vwp_setting_received();
-	   plane.check_mission();
-	}	
+	    send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP SETTING RECEIVED"));
+	    plane.check_mission();
+	}
 	
         break;
     }

@@ -104,16 +104,6 @@ public:
 
     // set to true if this GCS link is active
     bool            initialised;
-    
-    // This variable is set when a new mission is received
-    bool	new_mission_received;
-    bool	vwp_setting_received;
-    
-    bool	is_new_mission_received() { return new_mission_received; }
-    void	disable_new_mission_flag() { new_mission_received = false; }
-    
-    bool	is_vwp_setting_received() { return vwp_setting_received; }
-    void	disable_vwp_setting_received() { vwp_setting_received = false; }
 
     // NOTE! The streams enum below and the
     // set of AP_Int16 stream rates _must_ be
@@ -344,6 +334,8 @@ private:
     bool have_flow_control(void);
 
     bool is_message_nesesary_for_np(enum ap_message id);
+    
+    bool is_parameter_name(const char* param_name,mavlink_message_t *msg);
 
 };
 

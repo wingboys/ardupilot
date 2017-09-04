@@ -55,7 +55,7 @@ public:
     static const struct AP_Param::GroupInfo var_info[];
 
     // Initialize the indexes for calculating the virtual waypoints
-    void init(bool isFlying, float isFlyingProbability);
+    void init();
 
     /// calc_index_landing_waypoint - returns the index of the landing waypoint. The landing waypoint
     /// should always be the last item. But this function is implemented in order to contemplate
@@ -89,6 +89,8 @@ public:
     void enable() { vwp_enabled = 1; }
     void disable() { vwp_enabled = 0; }
     
+    bool check_parameter();
+    
     // Get methods
     bool	is_vwp_enabled()		{ return vwp_enabled; }
     AP_Float 	get_heading_wind()		{ return heading_wind; }
@@ -104,13 +106,11 @@ public:
 
     int16_t	get_num_commands()		{ return num_cmd; }
     
-    uint16_t    num_min_nav_waypoints;
-    
     // Set methods
     void 	set_dist_vwpl_1(AP_Float _val)	{ dist_vwpl_1 = _val; }
     void 	set_dist_vwp1_2(AP_Float _val)	{ dist_vwp1_2 = _val; }
     void 	set_dist_vwp2_3(AP_Float _val)	{ dist_vwp2_3 = _val; }
-    uint16_t    get_num_min_nav_waypoints() { return num_min_nav_waypoints; }
+    // uint16_t    get_num_min_nav_waypoints() { return num_min_nav_waypoints; }
     
     AP_Mission::Mission_Command get_vwp1() { return vwp1; }    
     AP_Mission::Mission_Command get_vwp2() { return vwp2; }    
@@ -168,7 +168,7 @@ private:
     AP_AHRS_NavEKF&	_ahrs;
     DataFlash_Class&	_dataflash;
     
-    // Generig message container for logging
+    // Generic message container for logging
     char* msg;
 
 };

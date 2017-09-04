@@ -36,9 +36,6 @@ int one_sec_cnt = 0;
 int _flag_cnt = 0;
 bool mission_rewrote = false;
 bool mission_restored = false;
-// -----------------------------------------
-
-bool mission_checked_at_startup = false;
 
 /*
   scheduler table - all regular tasks are listed here, along with how
@@ -308,13 +305,6 @@ void Plane::update_aux(void)
 
 void Plane::one_second_loop()
 {
-  
-    if(!mission_checked_at_startup)
-    {
-	check_mission();
-	mission_checked_at_startup = true;
-    }
-    
     /**
     if(virtual_wp.is_vwp_enabled())
     {
@@ -336,6 +326,7 @@ void Plane::one_second_loop()
 	}
     }
     */
+    
     
     if (should_log(MASK_LOG_CURRENT))
         Log_Write_Current();
@@ -379,35 +370,11 @@ void Plane::one_second_loop()
 /**
 void Plane::one_time_rewrite()
 {
-    // ========================================================================================
-    // Initialize the virtual waypoint procedure
-    virtual_wp.init_VWP();
-
-    GCS_SEND_MSG("Num commands: %d",virtual_wp.get_num_commands());
-    GCS_SEND_MSG("Idx Land WP: %d",virtual_wp.get_idx_landing_wp());
-    GCS_SEND_MSG("Idx Last MWP: %d",virtual_wp.get_idx_last_mission_wp());
-    GCS_SEND_MSG("Idx VWP: %d",virtual_wp.get_idx_vwp());
-    
-    GCS_SEND_MSG("dist_vwpl_1: %f",virtual_wp.get_dist_vwpl_1());    
-    GCS_SEND_MSG("dist_vwp1_2: %f",virtual_wp.get_dist_vwp1_2());    
-    GCS_SEND_MSG("dist_vwp2_3: %f",virtual_wp.get_dist_vwp2_3());
-    
-    // Currently, if the index calculation fails, we do nothing.
-    // We could think about aborting the mission in some particular circumstances.
-    if(virtual_wp.vwp_error == VWP_NO_ERROR)
-    {
-    	GCS_SEND_MSG("Index calculated correctly.");
-    }
-    else
-    {
-    	GCS_SEND_MSG("Error during index generation: %d",virtual_wp.vwp_error);
-    }
-    // ========================================================================================  
     
     AP_Mission::Mission_Command fake_cmd;
     fake_cmd.index = virtual_wp.get_idx_vwp();
     
-    virtual_wp.generate_virtual_waypoints(fake_cmd);
+    virtual_wp.generate(fake_cmd);
 
     if(virtual_wp.vwp_status == VWP_GENERATED)
     {

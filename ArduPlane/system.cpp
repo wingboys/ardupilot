@@ -257,7 +257,7 @@ void Plane::init_ardupilot()
     optflow.init();
 #endif
     
-    //check_mission();
+    check_mission();
 
 }
 
@@ -324,8 +324,44 @@ void Plane::startup_ground(void)
 // TODO: Modify this mission using the AP_MissionCheck library
 void Plane::check_mission()
 {
+    gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("CHECKING MISSION..."));
+    
+    bool successfull = false;
+    
+    if(virtual_wp.is_vwp_enabled())
+    {
+	gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP ENABLED"));
+	mission_checker = new MissionCheck_VWP{mission,DataFlash,virtual_wp};
+    }
+    else
+    {
+	gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR("VWP DISABLED"));
+	mission_checker = new MissionCheck_Default{mission,DataFlash};
+    }
+    
+    hal.scheduler->delay(500);
+      
     // TODO: Modify this mission using the AP_MissionCheck library
     // This function is called also inside the GCS_Mavlink class for re-checking the mission when something changes
+    
+    successfull = mission_checker->check();
+    
+    char* msg;
+    
+    if(!successfull)
+    {
+	asprintf(&msg,"ERRORS WHILE CHECKING %s MISSION",mission_checker->get_mission_type());
+	gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR(msg));
+    }
+    else
+    {
+	asprintf(&msg,"%s MISSION SUCCESSFULLY CHECKED",mission_checker->get_mission_type());
+	gcs_send_text_P(MAV_SEVERITY_WARNING,PSTR(msg));
+	mission_checker->init_mission();
+    }
+    
+    mission_checker->notify_user();
+      
 }
 
 /**
