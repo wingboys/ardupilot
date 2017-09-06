@@ -382,6 +382,42 @@ void Plane::send_location_neitzke(mavlink_channel_t chan)
 	*/
 }
 
+void Plane::send_magnetometer_neitzke(mavlink_channel_t chan)
+{
+    const Vector3f& field_milligauss = compass.get_field_milligauss();
+
+    mavlink_msg_magnetometer_neitzke_send(
+	chan,
+	field_milligauss.x,
+	field_milligauss.y,
+	field_milligauss.z			
+    );
+    
+}
+
+void Plane::send_battery_neitzke(mavlink_channel_t chan)
+{
+
+    mavlink_msg_battery_neitzke_send(
+	chan,
+	battery.current_amps(),
+	battery.voltage(),
+	hal.analogin->board_voltage()
+    );
+    
+}
+
+void Plane::send_ambient_neitzke(mavlink_channel_t chan)
+{
+
+    mavlink_msg_ambient_neitzke_send(
+	chan,
+	barometer.get_temperature(),
+	barometer.get_pressure()/1000.0
+    );
+    
+}
+
 void Plane::send_location(mavlink_channel_t chan)
 {
     uint32_t fix_time_ms;
@@ -700,6 +736,9 @@ bool GCS_MAVLINK::is_message_nesesary_for_np(enum ap_message id)
 		case 	MSG_HEARTBEAT:
 		case	MSG_MISSION_ITEM_REACHED:
 		case 	MSG_LOCATION_NEITZKE:
+		case	MSG_BATTERY_NEITZKE:
+		case    MSG_AMBIENT_NEITZKE:
+		case 	MSG_MAGNETOMETER_NEITZKE:
 			return true;
 	}
 
@@ -758,6 +797,27 @@ bool GCS_MAVLINK::try_send_message(enum ap_message id)
 		break;
 	CHECK_PAYLOAD_SIZE(LOCAL_POSITION_NEITZKE);
 	plane.send_location_neitzke(chan);
+	break;
+	
+    case MSG_MAGNETOMETER_NEITZKE:
+	if (!neitzkePilot_detected)
+		break; 
+	CHECK_PAYLOAD_SIZE(MAGNETOMETER_NEITZKE);
+	plane.send_magnetometer_neitzke(chan);
+	break;
+	
+    case MSG_BATTERY_NEITZKE:
+	if (!neitzkePilot_detected)
+		break; 
+	CHECK_PAYLOAD_SIZE(BATTERY_NEITZKE);
+	plane.send_battery_neitzke(chan);
+	break;
+	
+    case MSG_AMBIENT_NEITZKE:
+	if (!neitzkePilot_detected)
+		break; 
+	CHECK_PAYLOAD_SIZE(AMBIENT_NEITZKE);
+	plane.send_ambient_neitzke(chan);
 	break;
 
     case MSG_LOCAL_POSITION:
@@ -1147,12 +1207,15 @@ GCS_MAVLINK::data_stream_send(void)
         send_message(MSG_LOCATION);
         send_message(MSG_LOCAL_POSITION);
         send_message(MSG_LOCATION_NEITZKE);
+	send_message(MSG_MAGNETOMETER_NEITZKE);
     }
 
     if (plane.gcs_out_of_time) return;
 
     if (stream_trigger(STREAM_RAW_CONTROLLER)) {
         send_message(MSG_SERVO_OUT);
+	// TODO: Check if I can move the sending of the battery message somewhere else at lower rate
+	send_message(MSG_BATTERY_NEITZKE);
     }
 
     if (plane.gcs_out_of_time) return;
@@ -1160,6 +1223,7 @@ GCS_MAVLINK::data_stream_send(void)
     if (stream_trigger(STREAM_RC_CHANNELS)) {
         send_message(MSG_RADIO_OUT);
         send_message(MSG_RADIO_IN);
+	send_message(MSG_AMBIENT_NEITZKE);
     }
 
     if (plane.gcs_out_of_time) return;

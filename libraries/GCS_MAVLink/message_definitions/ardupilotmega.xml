@@ -961,6 +961,32 @@
 	    <field type="uint16_t" name="hdg">Compass heading in degrees * 100, 0.0..359.99 degrees. If unknown, set to: UINT16_MAX</field>
 	    <field type="int8_t" name="flight_stage">stages of flight (FLIGHT_NORMAL=1, FLIGHT_TAKEOFF=2, FLIGHT_LAND_APPROACH=3, FLIGHT_LAND_FINAL=4, FLIGHT_LAND_ABORT=5)</field>
     </message>
+      
+    <message name="GDPILOT_STATUS" id="234">
+	    <description>Response of a specific item/module of GDPilot.</description>
+	    <field name="module_id" type="uint8_t">Module ID</field>
+	    <field name="value" type="uint8_t">Status</field>
+    </message> 
+  
+    <message name="BATTERY_NEITZKE" id="235">
+	    <description>Battery information</description>
+	    <field name="currentB" type="float">Battery Current (A)</field>
+	    <field name="voltageB" type="float">Battery Voltage (V)</field>
+	    <field name="voltagePH" type="float">Board Voltage (V)</field>    
+    </message>
+	
+    <message name="AMBIENT_NEITZKE" id="236">
+	    <description>Ambient temperature and pressure</description>
+	    <field name="temperature" type="float">Ambient Temperature (C)</field>
+	    <field name="pressure" type="float">Barometric Pressure (kPa)</field>
+    </message> 
+    
+    <message name="MAGNETOMETER_NEITZKE" id="237">
+	    <description>Magnetic field components</description>
+	    <field type="float" name="x">x component magnetic field</field>
+	    <field type="float" name="y">y component magnetic field</field>
+	    <field type="float" name="z">z component magnetic field</field>
+    </message> 
 
      </messages>
 </mavlink>

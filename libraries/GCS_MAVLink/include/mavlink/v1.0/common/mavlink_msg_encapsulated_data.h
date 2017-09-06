@@ -4,15 +4,15 @@
 
 typedef struct __mavlink_encapsulated_data_t
 {
- uint16_t seqnr; /*< sequence number (starting with 0 on every transmission)*/
- uint8_t data[253]; /*< image data bytes*/
+ uint16_t seqnr; ///< sequence number (starting with 0 on every transmission)
+ uint8_t data[253]; ///< image data bytes
 } mavlink_encapsulated_data_t;
 
 #define MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN 255
 #define MAVLINK_MSG_ID_131_LEN 255
 
-#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC 223
-#define MAVLINK_MSG_ID_131_CRC 223
+#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC 172
+#define MAVLINK_MSG_ID_131_CRC 172
 
 #define MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN 253
 

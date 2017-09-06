@@ -2827,6 +2827,184 @@ static void mavlink_test_local_position_neitzke(uint8_t system_id, uint8_t compo
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_gdpilot_status(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_gdpilot_status_t packet_in = {
+		5,72
+    };
+	mavlink_gdpilot_status_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.module_id = packet_in.module_id;
+        	packet1.value = packet_in.value;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_gdpilot_status_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_gdpilot_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_gdpilot_status_pack(system_id, component_id, &msg , packet1.module_id , packet1.value );
+	mavlink_msg_gdpilot_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_gdpilot_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.module_id , packet1.value );
+	mavlink_msg_gdpilot_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_gdpilot_status_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_gdpilot_status_send(MAVLINK_COMM_1 , packet1.module_id , packet1.value );
+	mavlink_msg_gdpilot_status_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_battery_neitzke(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_battery_neitzke_t packet_in = {
+		17.0,45.0,73.0
+    };
+	mavlink_battery_neitzke_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.currentB = packet_in.currentB;
+        	packet1.voltageB = packet_in.voltageB;
+        	packet1.voltagePH = packet_in.voltagePH;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_battery_neitzke_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_battery_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_battery_neitzke_pack(system_id, component_id, &msg , packet1.currentB , packet1.voltageB , packet1.voltagePH );
+	mavlink_msg_battery_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_battery_neitzke_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.currentB , packet1.voltageB , packet1.voltagePH );
+	mavlink_msg_battery_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_battery_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_battery_neitzke_send(MAVLINK_COMM_1 , packet1.currentB , packet1.voltageB , packet1.voltagePH );
+	mavlink_msg_battery_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_ambient_neitzke(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_ambient_neitzke_t packet_in = {
+		17.0,45.0
+    };
+	mavlink_ambient_neitzke_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.temperature = packet_in.temperature;
+        	packet1.pressure = packet_in.pressure;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_ambient_neitzke_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_ambient_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_ambient_neitzke_pack(system_id, component_id, &msg , packet1.temperature , packet1.pressure );
+	mavlink_msg_ambient_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_ambient_neitzke_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.temperature , packet1.pressure );
+	mavlink_msg_ambient_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_ambient_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_ambient_neitzke_send(MAVLINK_COMM_1 , packet1.temperature , packet1.pressure );
+	mavlink_msg_ambient_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_magnetometer_neitzke(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_magnetometer_neitzke_t packet_in = {
+		17.0,45.0,73.0
+    };
+	mavlink_magnetometer_neitzke_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.x = packet_in.x;
+        	packet1.y = packet_in.y;
+        	packet1.z = packet_in.z;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_magnetometer_neitzke_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_magnetometer_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_magnetometer_neitzke_pack(system_id, component_id, &msg , packet1.x , packet1.y , packet1.z );
+	mavlink_msg_magnetometer_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_magnetometer_neitzke_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.x , packet1.y , packet1.z );
+	mavlink_msg_magnetometer_neitzke_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_magnetometer_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_magnetometer_neitzke_send(MAVLINK_COMM_1 , packet1.x , packet1.y , packet1.z );
+	mavlink_msg_magnetometer_neitzke_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_ardupilotmega(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_test_sensor_offsets(system_id, component_id, last_msg);
@@ -2888,6 +3066,10 @@ static void mavlink_test_ardupilotmega(uint8_t system_id, uint8_t component_id, 
 	mavlink_test_gopro_set_response(system_id, component_id, last_msg);
 	mavlink_test_rpm(system_id, component_id, last_msg);
 	mavlink_test_local_position_neitzke(system_id, component_id, last_msg);
+	mavlink_test_gdpilot_status(system_id, component_id, last_msg);
+	mavlink_test_battery_neitzke(system_id, component_id, last_msg);
+	mavlink_test_ambient_neitzke(system_id, component_id, last_msg);
+	mavlink_test_magnetometer_neitzke(system_id, component_id, last_msg);
 }
 
 #ifdef __cplusplus
